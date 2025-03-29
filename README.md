@@ -1,117 +1,102 @@
-# Anonim Chat
+# Anonymous Chat Platform
 
-Anonim Chat — bu foydalanuvchilarga Telegram orqali anonim xabar almashish imkoniyatini beruvchi loyiha. Loyiha ikkita asosiy komponentdan iborat:
+Anonymous Chat is a Telegram bot and a web-based dashboard that allows users to send and receive anonymous messages securely. The system consists of two main components:
 
-1. **Dashboard (Admin Panel)**: Foydalanuvchilar va anonim xabar almashishni real vaqt rejimida boshqarish uchun mo'ljallangan.
-2. **Telegram Bot**: Anonim xabar almashish, spam filtrlash va sessiyalarni nazorat qilish funksiyalarini bajaradi.
+- **Telegram Bot** (handles anonymous messaging and user interactions)
+- **Admin Dashboard** (manages users, messages, and sessions in real-time)
 
-## Loyihaning Tuzilishi
+## Features
 
-```
-anonim-chat/
-│-- dashboard/       # Admin panel
-│   ├── models/      # Ma'lumotlar bazasi modellari
-│   ├── routes/      # API yo‘nalishlari
-│   ├── controllers/ # Logika va biznes qoidalar
-│   ├── views/       # Frontend qismi (Agar mavjud bo'lsa)
-│   ├── server.js    # Asosiy server fayli
-│-- bot/             # Telegram bot
-│   ├── handlers/    # Bot buyruqlari va xabarlarni boshqarish
-│   ├── config/      # Konfiguratsiya fayllari
-│   ├── bot.js       # Asosiy bot fayli
-│-- .env             # Muhit o'zgaruvchilari
-│-- package.json     # Loyihaga bog‘liq kutubxonalar
-│-- README.md        # Hujjat
-```
+### Telegram Bot
+- Generates a unique anonymous chat link for each user.
+- Enables anonymous users to send messages without revealing their identity.
+- Supports real-time message forwarding between anonymous users and chat owners.
+- Implements spam filtering and rate limiting.
+- Tracks user activity and provides statistics.
 
-## Xususiyatlar
+### Admin Dashboard
+- Provides an intuitive web interface to manage users and messages.
+- Displays real-time messages using WebSockets.
+- Allows admins to monitor chat sessions.
+- Offers user session control and moderation features.
 
-- **Anonim Xabar Yuborish**: Foydalanuvchilar o'z shaxsini oshkor qilmasdan xabar yuborishlari mumkin.
-- **Spam Filtrlash**: Taqiqlangan so'zlar va xabar yuborish tezligini nazorat qilish orqali spam xabarlar filtrlanadi.
-- **Sessiyalarni Boshqarish**: Har bir anonim foydalanuvchi va egasi o'rtasida alohida sessiyalar yaratiladi va boshqariladi.
-- **Foydalanuvchi Ma'lumotlarini Saqlash**: Telegram foydalanuvchilarning ID, ismi, familiyasi va username kabi ma'lumotlari saqlanadi.
-- **Xabarlar Tarixini Saqlash**: Yuborilgan barcha xabarlar tarixini saqlash imkoniyati mavjud.
+## Installation
 
-## Texnologiyalar
+### Prerequisites
+Ensure you have the following installed:
+- **Node.js** (for the bot and backend)
+- **MongoDB** (for database storage)
+- **Express.js** (for the backend API)
+- **Socket.io** (for real-time communication)
+- **React.js** (for the dashboard frontend)
 
-- **Node.js** (Express.js) - Server va bot uchun
-- **MongoDB** - Ma'lumotlar bazasi sifatida ishlatiladi
-- **Mongoose** - MongoDB bilan ishlash uchun ODM kutubxonasi
-- **Socket.io** - Real-time chat va admin panel uchun
-- **node-telegram-bot-api** - Telegram botini yaratish va boshqarish uchun
-
-## O'rnatish
-
-### 1. Loyihani klonlash
-
-```bash
-git clone https://github.com/humoyun-dev/anonim-chat.git
-cd anonim-chat
+### Setup
+#### 1. Clone the Repository
+```sh
+  git clone https://github.com/humoyun-dev/anonim-chat.git
+  cd anonim-chat
 ```
 
-### 2. Muhit sozlamalari
-`.env` faylini yaratib, quyidagi ma'lumotlarni kiriting:
+#### 2. Configure Environment Variables
+Create a `.env` file in both the `bot/` and `dashboard/` directories with the following keys:
 
-```env
-# Telegram bot sozlamalari
-TELEGRAM_BOT_TOKEN=your_telegram_bot_token
-BOT_USERNAME=your_bot_username
-
-# Ma'lumotlar bazasi
-MONGODB_URI=your_mongodb_connection_uri
-
-# Server sozlamalari
-PORT=5000
+**For Telegram Bot (`bot/.env`):**
+```sh
+MONGODB_URI=<your_mongodb_connection_string>
+TELEGRAM_BOT_TOKEN=<your_telegram_bot_token>
+BOT_USERNAME=<your_bot_username>
 ```
 
-### 3. Kerakli bog‘liqliklarni o‘rnatish
-
-```bash
-cd dashboard
-npm install
-cd ../bot
-npm install
+**For Dashboard Backend (`dashboard/.env`):**
+```sh
+MONGODB_URI=<your_mongodb_connection_string>
+JWT_SECRET=<your_secret_key>
 ```
 
-### 4. Loyihani ishga tushirish
-
-#### Botni ishga tushirish
-```bash
+#### 3. Install Dependencies
+Run the following commands in each respective folder:
+```sh
 cd bot
-node bot.js
+npm install
+```
+```sh
+cd ../dashboard
+npm install
 ```
 
-#### Dashboardni ishga tushirish
-```bash
+#### 4. Start the Services
+Start the Telegram bot:
+```sh
+cd bot
+node index.js
+```
+Start the admin dashboard backend:
+```sh
 cd dashboard
-node server.js
+npm run server
+```
+Start the frontend:
+```sh
+cd dashboard
+npm start
 ```
 
-## Buyruqlar va Foydalanish
+## Usage
+1. **Telegram Bot:** Users can start the bot and generate a personal anonymous chat link.
+2. **Anonymous Chat:** Other users can send anonymous messages using the link.
+3. **Admin Dashboard:** Administrators can manage and moderate conversations in real-time.
 
-### Telegram bot buyruqlari
-- **/getlink** – Foydalanuvchi anonim xabar olish uchun havola yaratadi.
-- **/start** – Foydalanuvchilar xabar yuborish uchun sessiya ochadi.
-- **/userstats** – Foydalanuvchi statistikasini ko‘rsatadi.
+## Technologies Used
+- **Backend:** Node.js, Express.js, MongoDB, Socket.io
+- **Frontend:** React.js, TailwindCSS
+- **Bot:** Node.js, node-telegram-bot-api
 
-### Admin Panel imkoniyatlari
-- **Foydalanuvchilarni ko‘rish va boshqarish**
-- **Xabarlarni real vaqt rejimida ko‘rish**
-- **Spam filtri va taqiqlangan so‘zlar sozlamalari**
+## Contribution
+Feel free to fork this project and submit pull requests. Contributions are welcome!
 
-## Xavfsizlik va Maxfiylik
-- **Spam Filtrlash**: Taqiqlangan so‘zlar va rate-limiting orqali botni spamdan himoya qilish.
-- **Ma'lumotlarni Himoya Qilish**: Shaxsiy ma'lumotlar saqlanadi, lekin maxfiyligi ta'minlanadi.
+## License
+This project is licensed under the MIT License.
 
-## Hissa Qo‘shish
-1. **Fork qiling**: Loyihani GitHub hisobingizga fork qiling.
-2. **Branch yarating**: O‘zgarishlar uchun yangi branch yarating.
-3. **O‘zgarishlar kiritib, commit qiling**.
-4. **Pull request yuboring**.
-
-## Litsenziya
-Ushbu loyiha [MIT litsenziyasi](LICENSE) ostida tarqatiladi.
-
-## Muallif
-**Humoyun Dev** – [GitHub Profil](https://github.com/humoyun-dev)
+## Contact
+For any questions, reach out via [GitHub Issues](https://github.com/humoyun-dev/anonim-chat/issues).
 
