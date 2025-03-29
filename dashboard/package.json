@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "dotenv": "^16.4.7",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2",
+    "express-session": "^1.18.1",
+    "json2csv": "^6.0.0-alpha.2",
+    "mongoose": "^8.13.1",
+    "socket.io": "^4.8.1"
+  },
+  "name": "dashboard",
+  "version": "1.0.0",
+  "main": "adminDashboard.js",
+  "scripts": {
+    "start": "node adminDashboard.js",
+    "dev": "nodemon adminDashboard.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  }
+}

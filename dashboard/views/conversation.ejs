@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="uz">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Conversation: <%= senderId %> va <%= receiverId %></title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        background: #e9ecef;
+      }
+      .chat-container {
+        max-width: 800px;
+        margin: 30px auto;
+        padding: 20px;
+        background-color: #ffffff;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      .chat {
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 10px;
+        margin-bottom: 20px;
+      }
+      .chat-bubble {
+        padding: 12px 18px;
+        border-radius: 20px;
+        margin-bottom: 15px;
+        position: relative;
+        font-size: 1rem;
+        line-height: 1.4;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .chat-bubble.sender {
+        background-color: #0d6efd;
+        color: #fff;
+      }
+      .chat-bubble.receiver {
+        background-color: #f1f0f0;
+        color: #000;
+      }
+      .chat-time {
+        font-size: 0.75rem;
+        margin-top: 5px;
+        color: #6c757d;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark shadow-sm">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/dashboard">Dashboard</a>
+        <div class="d-flex">
+          <a class="btn btn-outline-light me-2" href="/conversation"
+            >Choose Conversation</a
+          >
+          <a class="btn btn-outline-light" href="/logout">Logout</a>
+        </div>
+      </div>
+    </nav>
+    <div class="container chat-container">
+      <h2 class="mb-4 text-center">
+        Conversation: <%= senderId %> va <%= receiverId %>
+      </h2>
+      <div id="chat" class="chat">
+        <% messages.forEach(function(message) { %> <% if (message.sender ===
+        senderId) { %>
+        <div class="d-flex justify-content-end">
+          <div class="chat-bubble sender">
+            <div><%= message.text %></div>
+            <div class="chat-time text-end" style="color: wheat">
+              <%= new Date(message.timestamp).toLocaleString() %>
+            </div>
+          </div>
+        </div>
+        <% } else { %>
+        <div class="d-flex justify-content-start">
+          <div class="chat-bubble receiver">
+            <div><%= message.text %></div>
+            <div class="chat-time text-start">
+              <%= new Date(message.timestamp).toLocaleString() %>
+            </div>
+          </div>
+        </div>
+        <% } %> <% }); %>
+      </div>
+
+      <!-- "Eng Pastga Tushish" tugmasi -->
+      <div class="text-center mb-3">
+        <button id="scrollToBottom" class="btn btn-primary">
+          Eng Pastga Tushish
+        </button>
+      </div>
+
+      <script>
+        // Sahifa yuklanganda avtomatik pastga scroll qiladi:
+        window.addEventListener("load", () => {
+          const chat = document.getElementById("chat");
+          chat.scrollTop = chat.scrollHeight;
+        });
+
+        // Tugma bosilganda chat pastga scroll qilinsin:
+        document
+          .getElementById("scrollToBottom")
+          .addEventListener("click", () => {
+            const chat = document.getElementById("chat");
+            chat.scrollTop = chat.scrollHeight;
+          });
+      </script>
+
+      <div class="text-center">
+        <a href="/user/<%= senderId %>/detail" class="btn btn-secondary"
+          >Back to User Detail</a
+        >
+      </div>
+    </div>
+
+    <!-- Socket.io script -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      const senderId = <%= senderId %>;
+      const receiverId = <%= receiverId %>;
+      const socket = io();
+
+      // Konversatsiya xonasiga qo'shiling:
+      socket.emit("joinConversation", { senderId, receiverId });
+
+      // Yangi xabarlar kelganda, DOM ga qo'shish:
+      socket.on("newMessage", (message) => {
+        if (
+          (message.sender === senderId && message.recipient === receiverId) ||
+          (message.sender === receiverId && message.recipient === senderId)
+        ) {
+          const chat = document.getElementById("chat");
+          const div = document.createElement("div");
+          div.className = "d-flex " + (message.sender === senderId ? "justify-content-end" : "justify-content-start");
+          div.innerHTML = `
+            <div class="chat-bubble ${message.sender === senderId ? "sender" : "receiver"}">
+              <div>${message.text}</div>
+              <div class="chat-time ${message.sender === senderId ? "text-end" : "text-start"}">
+                ${new Date(message.timestamp).toLocaleString()}
+              </div>
+            </div>
+          `;
+          chat.appendChild(div);
+          chat.scrollTop = chat.scrollHeight;
+        }
+      });
+
+      // Sahifa yuklanganda chatni eng oxirgi xabarga scroll qilamiz
+      window.addEventListener('load', () => {
+        const chat = document.getElementById("chat");
+        chat.scrollTop = chat.scrollHeight;
+      });
+    </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

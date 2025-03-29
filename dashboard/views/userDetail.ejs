@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="uz">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>User <%= userId %> Conversations</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/dashboard">Dashboard</a>
+      <div class="d-flex">
+         <a class="btn btn-outline-light me-2" href="/users">Users</a>
+         <a class="btn btn-outline-light" href="/logout">Logout</a>
+      </div>
+    </div>
+  </nav>
+  <div class="container">
+    <h1 class="mb-4">User <%= userId %> Conversations</h1>
+    <% if (partners.length === 0) { %>
+      <p>Ushbu foydalanuvchi hali muloqat qilmagan.</p>
+    <% } else { %>
+      <ul class="list-group">
+        <% partners.forEach(partner => { %>
+          <li class="list-group-item d-flex justify-content-between align-items-center">
+            <span>
+              <strong><%= partner.firstName %> <%= partner.lastName %></strong>
+              (@<%= partner.username %>) [ID: <%= partner.userId %>]
+            </span>
+            <a href="/conversation/<%= userId %>/<%= partner.userId %>" class="btn btn-primary btn-sm">
+              View Conversation
+            </a>
+          </li>
+        <% }); %>
+      </ul>
+    <% } %>
+    <div class="mt-4">
+      <a href="/users" class="btn btn-secondary">Back to Users List</a>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
