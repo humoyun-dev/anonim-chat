@@ -1,61 +1,66 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Users List</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/dashboard">Dashboard</a>
-      <div class="d-flex">
-        <a class="btn btn-outline-light me-2" href="/messages">Messages</a>
-        <a class="btn btn-outline-light me-2" href="/sessions">Sessions</a>
-        <a class="btn btn-outline-light" href="/logout">Logout</a>
-      </div>
+<%- include("partials/layout-top", { title, active }) %>
+
+<div class="container-fluid">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h4 m-0">Users</h1>
+    <a class="btn btn-sm btn-outline-light" href="/chat">Open Chat</a>
+  </div>
+
+  <form class="row g-2 mb-3" method="GET" action="/users">
+    <div class="col-md-10">
+      <input
+        type="text"
+        class="form-control"
+        name="search"
+        placeholder="Search users by name or username"
+        value="<%= search %>"
+      />
     </div>
-  </nav>
-  <div class="container">
-    <h1 class="mb-4">Users List</h1>
-    <form class="row mb-4" method="GET" action="/users">
-      <div class="col-md-10">
-        <input type="text" class="form-control" name="search" placeholder="Search users by name or username" value="<%= search %>">
-      </div>
-      <div class="col-md-2">
-        <button class="btn btn-primary w-100" type="submit">Search</button>
-      </div>
-    </form>
-    <table class="table table-bordered table-striped">
-      <thead class="table-dark">
-        <tr>
-          <th>User ID</th>
-          <th>First Name</th>
-          <th>Last Name</th>
-          <th>Username</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
-        <% users.forEach(user => { %>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100" type="submit">Search</button>
+    </div>
+  </form>
+
+  <div class="card border-0" style="background: rgba(15,23,42,0.55); border: 1px solid rgba(255,255,255,0.08) !important;">
+    <div class="table-responsive">
+      <table class="table table-dark table-hover align-middle mb-0">
+        <thead>
+          <tr>
+            <th>User ID</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Username</th>
+            <th style="width: 220px;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% users.forEach((user) => { %>
           <tr>
             <td><%= user.userId %></td>
-            <td><%= user.firstName %></td>
-            <td><%= user.lastName %></td>
-            <td><%= user.username %></td>
+            <td><%= user.firstName || "" %></td>
+            <td><%= user.lastName || "" %></td>
+            <td><%= user.username ? ("@" + user.username) : "" %></td>
             <td>
-              <a href="/user/<%= user.userId %>/detail" class="btn btn-primary btn-sm">View Messages</a>
-              <form action="/user/<%= user.userId %>/delete" method="POST" style="display:inline-block;" onsubmit="return confirm('Are you sure?');">
-                <button class="btn btn-danger btn-sm" type="submit">Delete</button>
+              <a href="/user/<%= user.userId %>/detail" class="btn btn-sm btn-outline-light"
+                >Conversations</a
+              >
+              <form
+                action="/user/<%= user.userId %>/delete"
+                method="POST"
+                style="display: inline-block"
+                onsubmit="return confirm('Are you sure?');"
+              >
+                <button class="btn btn-sm btn-outline-danger" type="submit">
+                  Delete
+                </button>
               </form>
             </td>
           </tr>
-        <% }); %>
-      </tbody>
-    </table>
-    <a href="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+          <% }) %>
+        </tbody>
+      </table>
+    </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+
+<%- include("partials/layout-bottom") %>

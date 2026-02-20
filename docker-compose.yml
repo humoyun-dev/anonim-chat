@@ -1,0 +1,96 @@
+services:
+  mongo:
+    image: mongo:7
+    container_name: mongo
+    command: ["mongod", "--replSet", "rs0", "--bind_ip_all"]
+    volumes:
+      - mongo_data:/data/db
+      - ./docker/mongo/init-replica.js:/docker-entrypoint-initdb.d/init-replica.js:ro
+    networks:
+      - appnet
+    restart: unless-stopped
+
+  dashboard:
+    build:
+      context: ./dashboard
+      dockerfile: Dockerfile
+    container_name: anonim-dashboard
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - MONGODB_URI=${MONGODB_URI_DASHBOARD:-mongodb://mongo:27017/anonim_chat?replicaSet=rs0}
+      - SESSION_SECRET=${SESSION_SECRET:-change-me}
+      - ADMIN_USER=${ADMIN_USER:-admin}
+      - ADMIN_PASS=${ADMIN_PASS:-password}
+      - VIRTUAL_HOST=${DASHBOARD_DOMAIN:-}
+      - VIRTUAL_PORT=3000
+      - LETSENCRYPT_HOST=${DASHBOARD_DOMAIN:-}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-}
+    depends_on:
+      - mongo
+    networks:
+      - appnet
+      - webnet
+    restart: unless-stopped
+
+  bot:
+    build:
+      context: ./bot
+      dockerfile: Dockerfile
+    container_name: anonim-bot
+    environment:
+      - MONGODB_URI=${MONGODB_URI_BOT:-mongodb://mongo:27017/anonim_chat?replicaSet=rs0}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - BOT_USERNAME=${BOT_USERNAME}
+      - REVEAL_STARS_COST=${REVEAL_STARS_COST:-50}
+      - PAY_SUPPORT_TEXT=${PAY_SUPPORT_TEXT:-}
+    depends_on:
+      - mongo
+    networks:
+      - appnet
+    restart: unless-stopped
+
+  nginx-proxy:
+    image: jwilder/nginx-proxy:alpine
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./certs:/etc/nginx/certs:rw
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    environment:
+      - CLIENT_MAX_BODY_SIZE=100m
+    networks:
+      - webnet
+    restart: unless-stopped
+
+  letsencrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: letsencrypt
+    environment:
+      - NGINX_PROXY_CONTAINER=nginx-proxy
+      - DEFAULT_EMAIL=${LETSENCRYPT_EMAIL:-}
+    volumes:
+      - ./certs:/etc/nginx/certs:rw
+      - ./data/letsencrypt:/etc/acme.sh
+      - ./vhost.d:/etc/nginx/vhost.d
+      - ./html:/usr/share/nginx/html
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - webnet
+    restart: unless-stopped
+    depends_on:
+      - nginx-proxy
+
+volumes:
+  mongo_data:
+
+networks:
+  webnet:
+    driver: bridge
+  appnet:
+    driver: bridge

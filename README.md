@@ -1,102 +1,55 @@
-# Anonymous Chat Platform
+# Anonim Chat (Telegram bot + Admin Dashboard)
 
-Anonymous Chat is a Telegram bot and a web-based dashboard that allows users to send and receive anonymous messages securely. The system consists of two main components:
+Bu loyiha 2 qismdan iborat:
 
-- **Telegram Bot** (handles anonymous messaging and user interactions)
-- **Admin Dashboard** (manages users, messages, and sessions in real-time)
+- `bot/` — Telegram anonim chat boti (Node.js + `grammy`)
+- `dashboard/` — Admin dashboard (Express + EJS + Socket.io)
 
-## Features
+## Asosiy imkoniyatlar
 
-### Telegram Bot
-- Generates a unique anonymous chat link for each user.
-- Enables anonymous users to send messages without revealing their identity.
-- Supports real-time message forwarding between anonymous users and chat owners.
-- Implements spam filtering and rate limiting.
-- Tracks user activity and provides statistics.
+### Bot
+- Owner uchun ` /getlink `: shaxsiy anonim link yaratadi.
+- Anon foydalanuvchi link orqali kirib **text / media / sticker / custom emoji (premium emoji)** yuboradi.
+- Owner xabarga inline tugma orqali **javob beradi**.
+- Har bir anonim xabar tagida **“Kim yozganini ko‘rish (50⭐)”** tugmasi:
+  - Owner 50 Telegram Stars to‘lasa, bot yozuvchini (ID, ism, username) ko‘rsatadi.
+- Spam filter + rate limit (qotib qolmasligi uchun memory cleanup bilan).
 
-### Admin Dashboard
-- Provides an intuitive web interface to manage users and messages.
-- Displays real-time messages using WebSockets.
-- Allows admins to monitor chat sessions.
-- Offers user session control and moderation features.
+### Dashboard
+- ` /chat ` sahifa — chat-ga o‘xshash UI (sidebarlar bilan).
+- Real-time: MongoDB’dagi yangi xabarlar kelishi bilan Socket.io orqali chat yangilanadi.
+  - Agar MongoDB Change Streams mavjud bo‘lsa (Replica Set / Atlas) — haqiqiy realtime.
+  - Aks holda polling fallback ishlaydi.
 
-## Installation
+## Tez start (Docker + Nginx + Let's Encrypt) — Deploy uchun
 
-### Prerequisites
-Ensure you have the following installed:
-- **Node.js** (for the bot and backend)
-- **MongoDB** (for database storage)
-- **Express.js** (for the backend API)
-- **Socket.io** (for real-time communication)
-- **React.js** (for the dashboard frontend)
+1) `.env` tayyorlang:
 
-### Setup
-#### 1. Clone the Repository
-```sh
-  git clone https://github.com/humoyun-dev/anonim-chat.git
-  cd anonim-chat
+```bash
+cp .env.example .env
 ```
 
-#### 2. Configure Environment Variables
-Create a `.env` file in both the `bot/` and `dashboard/` directories with the following keys:
+2) `.env` ichida quyidagilarni to‘ldiring:
+- `TELEGRAM_BOT_TOKEN`
+- `BOT_USERNAME`
+- `DASHBOARD_DOMAIN` (masalan: `dashboard.example.com`)
+- `LETSENCRYPT_EMAIL`
+- `ADMIN_PASS`, `SESSION_SECRET`
 
-**For Telegram Bot (`bot/.env`):**
-```sh
-MONGODB_URI=<your_mongodb_connection_string>
-TELEGRAM_BOT_TOKEN=<your_telegram_bot_token>
-BOT_USERNAME=<your_bot_username>
+3) Ishga tushiring:
+
+```bash
+docker compose up -d --build
 ```
 
-**For Dashboard Backend (`dashboard/.env`):**
-```sh
-MONGODB_URI=<your_mongodb_connection_string>
-JWT_SECRET=<your_secret_key>
-```
+4) Dashboard:
+- Lokal: `http://localhost:3000`
+- Deploy: `https://DASHBOARD_DOMAIN` (SSL avtomatik)
 
-#### 3. Install Dependencies
-Run the following commands in each respective folder:
-```sh
-cd bot
-npm install
-```
-```sh
-cd ../dashboard
-npm install
-```
+## Docker-siz (lokal o‘rnatish)
 
-#### 4. Start the Services
-Start the Telegram bot:
-```sh
-cd bot
-node index.js
-```
-Start the admin dashboard backend:
-```sh
-cd dashboard
-npm run server
-```
-Start the frontend:
-```sh
-cd dashboard
-npm start
-```
+To‘liq qo‘llanma: `docs/INSTALL.md`
 
-## Usage
-1. **Telegram Bot:** Users can start the bot and generate a personal anonymous chat link.
-2. **Anonymous Chat:** Other users can send anonymous messages using the link.
-3. **Admin Dashboard:** Administrators can manage and moderate conversations in real-time.
+## Deploy qo‘llanma (VPS)
 
-## Technologies Used
-- **Backend:** Node.js, Express.js, MongoDB, Socket.io
-- **Frontend:** React.js, TailwindCSS
-- **Bot:** Node.js, node-telegram-bot-api
-
-## Contribution
-Feel free to fork this project and submit pull requests. Contributions are welcome!
-
-## License
-This project is licensed under the MIT License.
-
-## Contact
-For any questions, reach out via [GitHub Issues](https://github.com/humoyun-dev/anonim-chat/issues).
-
+To‘liq qo‘llanma: `docs/DEPLOY.md`

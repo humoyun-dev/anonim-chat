@@ -1,51 +1,37 @@
-<!DOCTYPE html>
-<html lang="uz">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Admin Dashboard</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/dashboard">Dashboard</a>
-      <div class="d-flex">
-        <a class="btn btn-outline-light me-2" href="/users">Users</a>
-        <a class="btn btn-outline-light me-2" href="/messages">Messages</a>
-        <a class="btn btn-outline-light" href="/logout">Logout</a>
+<%- include("partials/layout-top", { title, active }) %>
+
+<div class="container-fluid">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h4 m-0">Dashboard Analytics</h1>
+    <a class="btn btn-sm btn-outline-light" href="/chat">Open Chat</a>
+  </div>
+
+  <div class="row g-3">
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm" style="background: rgba(96,165,250,0.12); color: white;">
+        <div class="card-body">
+          <div class="text-white-50">Total Users</div>
+          <div class="display-6 fw-bold"><%= userCount %></div>
+        </div>
       </div>
     </div>
-  </nav>
-  <div class="container">
-    <h1 class="mb-4">Dashboard Analytics</h1>
-    <div class="row">
-      <div class="col-md-4">
-        <div class="card text-white bg-primary mb-3">
-          <div class="card-body">
-            <h5 class="card-title">Total Users</h5>
-            <p class="card-text display-4"><%= userCount %></p>
-          </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm" style="background: rgba(34,197,94,0.12); color: white;">
+        <div class="card-body">
+          <div class="text-white-50">Total Messages</div>
+          <div class="display-6 fw-bold"><%= messageCount %></div>
         </div>
       </div>
-      <div class="col-md-4">
-        <div class="card text-white bg-success mb-3">
-          <div class="card-body">
-            <h5 class="card-title">Total Messages</h5>
-            <p class="card-text display-4"><%= messageCount %></p>
-          </div>
-        </div>
-      </div>
-      <div class="col-md-4">
-        <div class="card text-white bg-warning mb-3">
-          <div class="card-body">
-            <h5 class="card-title">Total Sessions</h5>
-            <p class="card-text display-4"><%= sessionCount %></p>
-          </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-0 shadow-sm" style="background: rgba(251,191,36,0.14); color: white;">
+        <div class="card-body">
+          <div class="text-white-50">Total Sessions</div>
+          <div class="display-6 fw-bold"><%= sessionCount %></div>
         </div>
       </div>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+</div>
+
+<%- include("partials/layout-bottom") %>

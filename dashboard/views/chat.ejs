@@ -1,0 +1,113 @@
+<%- include("partials/layout-top", { title, active }) %>
+
+<div class="chat-shell">
+  <aside class="chat-list">
+    <div class="chat-list-header">
+      <input
+        id="chatSearch"
+        class="form-control form-control-sm"
+        type="text"
+        placeholder="Search..."
+      />
+    </div>
+    <div id="conversationList" class="chat-list-items">
+      <% if (!conversations || conversations.length === 0) { %>
+      <div class="chat-list-empty">Hali konversatsiyalar yo'q.</div>
+      <% } %> <% conversations.forEach((c) => { %>
+      <a
+        class="chat-list-item <%= selected && selected.userA === c.userAId && selected.userB === c.userBId ? 'active' : '' %>"
+        href="/chat/<%= c.userAId %>/<%= c.userBId %>"
+        data-user-a="<%= c.userAId %>"
+        data-user-b="<%= c.userBId %>"
+      >
+        <div class="chat-list-title">
+          <%= c.userAName %> <span class="chat-list-arrow">↔</span> <%= c.userBName %>
+        </div>
+        <div class="chat-list-meta">
+          <span class="chat-list-preview"><%= c.lastPreview %></span>
+          <span class="chat-list-time"
+            ><%= c.lastTimestamp ? new Date(c.lastTimestamp).toLocaleString() : '' %></span
+          >
+        </div>
+      </a>
+      <% }) %>
+    </div>
+  </aside>
+
+  <section class="chat-main">
+    <% if (!selected) { %>
+    <div class="chat-empty">
+      <h5 class="mb-1">Conversation tanlang</h5>
+      <div class="text-muted">Chap tomondan suhbatni tanlang.</div>
+    </div>
+    <% } else { %>
+    <div class="chat-header">
+      <div class="chat-header-title">
+        <span class="chat-header-id"><%= selected.userA %></span>
+        <span class="chat-header-arrow">↔</span>
+        <span class="chat-header-id"><%= selected.userB %></span>
+      </div>
+    </div>
+    <div id="chatMessages" class="chat-messages">
+      <% messages.forEach((m) => { %> <% const isLeft = m.sender ===
+      selected.userA; %>
+      <div
+        class="msg-row <%= isLeft ? 'left' : 'right' %>"
+        data-message-id="<%= m._id %>"
+      >
+        <div class="msg-bubble">
+          <div class="msg-text">
+            <%= (m.text && m.text.trim()) ? m.text : ("[" + (m.kind || "media") + "]") %>
+          </div>
+          <div class="msg-meta">
+            <span class="msg-sender"><%= m.sender %></span>
+            <span class="msg-time"
+              ><%= m.timestamp ? new Date(m.timestamp).toLocaleString() : '' %></span
+            >
+          </div>
+        </div>
+      </div>
+      <% }) %>
+    </div>
+    <div class="chat-footer">
+      <div class="text-muted small">Real-time: Socket.io</div>
+    </div>
+    <% } %>
+  </section>
+
+  <aside class="chat-info">
+    <% if (!selected) { %>
+    <div class="chat-info-empty text-muted">Info panel</div>
+    <% } else { %>
+    <div class="chat-info-card">
+      <div class="chat-info-title">Conversation info</div>
+      <div class="chat-info-row">
+        <div class="chat-info-label">User A</div>
+        <div class="chat-info-value">
+          <%= usersById[selected.userA] ? (usersById[selected.userA].firstName || '') : '' %>
+          <%= usersById[selected.userA] ? (usersById[selected.userA].lastName || '') : '' %>
+          <% if (usersById[selected.userA] && usersById[selected.userA].username) { %>
+          (@<%= usersById[selected.userA].username %>)
+          <% } %> [ID: <%= selected.userA %>]
+        </div>
+      </div>
+      <div class="chat-info-row">
+        <div class="chat-info-label">User B</div>
+        <div class="chat-info-value">
+          <%= usersById[selected.userB] ? (usersById[selected.userB].firstName || '') : '' %>
+          <%= usersById[selected.userB] ? (usersById[selected.userB].lastName || '') : '' %>
+          <% if (usersById[selected.userB] && usersById[selected.userB].username) { %>
+          (@<%= usersById[selected.userB].username %>)
+          <% } %> [ID: <%= selected.userB %>]
+        </div>
+      </div>
+    </div>
+    <% } %>
+  </aside>
+</div>
+
+<script>
+  window.__CHAT_SELECTED__ = <%- JSON.stringify(selected) %>;
+</script>
+
+<%- include("partials/layout-bottom") %>

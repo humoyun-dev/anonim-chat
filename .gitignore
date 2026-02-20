@@ -1,0 +1,8 @@
+.env
+certs/
+vhost.d/
+html/
+data/
+docker/mongo/*.log
+node_modules/
+
