@@ -1,8 +1,8 @@
 <%- include("partials/layout-top", { title, active }) %>
 
-<div class="container-fluid" style="max-width: 760px;">
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="h4 m-0">Konversatsiya tanlash</h1>
+  <div class="container-fluid" style="max-width: 760px;">
+    <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h4 m-0">Select Conversation</h1>
     <a class="btn btn-sm btn-outline-light" href="/chat">Chat</a>
   </div>
 
@@ -14,9 +14,9 @@
     <div class="card-body">
       <form action="/conversation" method="POST">
         <div class="mb-3">
-          <label for="sender" class="form-label">Yozuvchi foydalanuvchi</label>
+          <label for="sender" class="form-label">Sender user</label>
           <select id="sender" name="sender" class="form-select" required>
-            <option value="">Tanlang...</option>
+            <option value="">Select...</option>
             <% users.forEach((user) => { %>
             <option value="<%= user.userId %>">
               <%= user.firstName || "" %> <%= user.lastName || "" %>
@@ -30,10 +30,10 @@
         </div>
         <div class="mb-3">
           <label for="receiver" class="form-label"
-            >Qabul qiluvchi foydalanuvchi</label
+            >Recipient user</label
           >
           <select id="receiver" name="receiver" class="form-select" required>
-            <option value="">Tanlang...</option>
+            <option value="">Select...</option>
             <% users.forEach((user) => { %>
             <option value="<%= user.userId %>">
               <%= user.firstName || "" %> <%= user.lastName || "" %>
@@ -46,7 +46,7 @@
           </select>
         </div>
         <button type="submit" class="btn btn-primary">
-          Konversatsiyani ochish
+          Open conversation
         </button>
       </form>
     </div>

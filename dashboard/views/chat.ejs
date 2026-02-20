@@ -12,7 +12,7 @@
     </div>
     <div id="conversationList" class="chat-list-items">
       <% if (!conversations || conversations.length === 0) { %>
-      <div class="chat-list-empty">Hali konversatsiyalar yo'q.</div>
+      <div class="chat-list-empty">No conversations yet.</div>
       <% } %> <% conversations.forEach((c) => { %>
       <a
         class="chat-list-item <%= selected && selected.userA === c.userAId && selected.userB === c.userBId ? 'active' : '' %>"
@@ -37,8 +37,8 @@
   <section class="chat-main">
     <% if (!selected) { %>
     <div class="chat-empty">
-      <h5 class="mb-1">Conversation tanlang</h5>
-      <div class="text-muted">Chap tomondan suhbatni tanlang.</div>
+      <h5 class="mb-1">Select a conversation</h5>
+      <div class="text-muted">Choose a conversation from the left.</div>
     </div>
     <% } else { %>
     <div class="chat-header">
@@ -77,7 +77,7 @@
 
   <aside class="chat-info">
     <% if (!selected) { %>
-    <div class="chat-info-empty text-muted">Info panel</div>
+    <div class="chat-info-empty text-muted">Info</div>
     <% } else { %>
     <div class="chat-info-card">
       <div class="chat-info-title">Conversation info</div>

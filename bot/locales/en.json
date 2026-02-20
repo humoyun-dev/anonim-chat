@@ -1,0 +1,92 @@
+{
+  "cmd_getlink": "Your anonymous chat link:\\n{link}\\nShare this link so others can message you anonymously.",
+  "start_no_param": "Welcome! If you opened the bot via an invite link, just send your message.",
+  "start_owner_self": "You're the owner of this anonymous chat link.",
+  "start_joined": "You're connected to an anonymous chat session. Send your message.",
+  "start_owner_notified": "A new anonymous user joined your session.",
+  "start_session_save_error": "Couldn't create the session. Please try again later.",
+  "start_wrong_param": "Invalid start parameter. Please use the invite link.",
+
+  "cmd_desc_start": "Start the bot",
+  "cmd_desc_getlink": "Get your anonymous chat link",
+  "cmd_desc_userstats": "Show your statistics",
+  "cmd_desc_paysupport": "Payment support info",
+  "cmd_desc_lang": "Change language",
+
+  "lang_choose": "Choose your language:",
+  "lang_updated": "Language updated ✅",
+  "lang_name_uz": "O‘zbekcha",
+  "lang_name_ru": "Русский",
+  "lang_name_en": "English",
+
+  "reveal_invalid_param": "Invalid reveal parameter.",
+  "message_not_found": "Message not found.",
+  "payment_not_allowed": "You can't pay for this message.",
+
+  "spam_blocked": "Your message was detected as spam and was not sent.",
+  "must_join_or_reply": "To send messages, open the session via the link. If you are the owner, tap \"Reply\" under the message.",
+  "cannot_self_message": "You can't message yourself via your own link.",
+
+  "reply_sent": "Your reply was sent.",
+  "message_sent_to_owner": "Your message was sent to the owner.",
+
+  "reply_fallback_prefix": "Reply: {text}",
+
+  "invoice_title": "Reveal sender",
+  "invoice_desc": "Pay {stars}⭐ to reveal who sent this anonymous message.",
+  "invoice_price_label": "Reveal sender",
+  "invoice_error": "Couldn't create the payment. Please try again later.",
+
+  "pay_support_default": "Payment support: contact the bot admin (e.g. @your_admin).",
+
+  "cb_invalid_id": "Invalid ID.",
+  "cb_no_permission": "No permission.",
+  "cb_already_revealed": "Already revealed ✅",
+  "cb_payment_required": "Payment required: {stars}⭐",
+
+  "cb_reply_prompt": "Please send your reply.",
+  "msg_reply_instruction": "Now type your reply and send it. It will be delivered to the anonymous user.",
+  "cb_reply_not_allowed": "You can't reply to this message.",
+  "cb_ask_prompt": "Please type your new question.",
+
+  "cb_session_closed": "Session closed.",
+  "cb_session_not_found": "Session not found.",
+  "msg_session_closed_owner": "Session has been closed.",
+  "msg_session_closed_anon": "Your session has been closed.",
+
+  "cb_repeat_prompt": "Please resend your message.",
+  "msg_repeat_owner": "Please resend the message (you can edit and send again).",
+
+  "cb_error": "Something went wrong.",
+
+  "reveal_opened_title": "🔓 Sender revealed:",
+  "reveal_opened_id": "- ID: {id}",
+  "reveal_opened_name": "- Name: {name}",
+  "reveal_opened_username": "- Username: {username}",
+
+  "userstats_title": "Your stats:",
+  "userstats_sent": "- Messages sent: {count}",
+  "userstats_sessions_anon": "- Sessions (as anonymous): {count}",
+  "userstats_sessions_owner": "- Sessions (as owner): {count}",
+  "userstats_last_activity": "- Last activity: {value}",
+  "userstats_no_activity": "No messages yet",
+  "userstats_error": "Failed to load your stats.",
+
+  "btn_reply": "Reply",
+  "btn_reveal": "Show sender ({stars}⭐)",
+  "btn_ask_again": "Ask again",
+  "btn_close_session": "Close session",
+  "btn_repeat": "Repeat",
+
+  "kind_text": "text",
+  "kind_photo": "photo",
+  "kind_video": "video",
+  "kind_document": "document",
+  "kind_sticker": "sticker",
+  "kind_animation": "animation",
+  "kind_voice": "voice message",
+  "kind_audio": "audio",
+  "kind_video_note": "video note",
+  "kind_unknown": "unsupported"
+}
+

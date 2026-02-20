@@ -1,0 +1,92 @@
+{
+  "cmd_getlink": "Sizning anonim chat havolangiz:\\n{link}\\nUshbu havola orqali boshqalar sizga anonim xabar yuborishi mumkin.",
+  "start_no_param": "Xush kelibsiz! Havola orqali kirgan bo‘lsangiz, shunchaki xabaringizni yuboring.",
+  "start_owner_self": "Siz ushbu anonim chat havolasining egasisiz.",
+  "start_joined": "Siz anonim chat sessiyasiga qo‘shildingiz. Xabaringizni yuboring.",
+  "start_owner_notified": "Sessiyangizga yangi anonim foydalanuvchi qo‘shildi.",
+  "start_session_save_error": "Sessiyani yaratib bo‘lmadi. Keyinroq urinib ko‘ring.",
+  "start_wrong_param": "Noto‘g‘ri parametr. Iltimos, havola orqali kiring.",
+
+  "cmd_desc_start": "Botni ishga tushirish",
+  "cmd_desc_getlink": "Anonim havolani olish",
+  "cmd_desc_userstats": "Statistikani ko‘rish",
+  "cmd_desc_paysupport": "To‘lov bo‘yicha yordam",
+  "cmd_desc_lang": "Tilni o‘zgartirish",
+
+  "lang_choose": "Tilni tanlang:",
+  "lang_updated": "Til yangilandi ✅",
+  "lang_name_uz": "O‘zbekcha",
+  "lang_name_ru": "Русский",
+  "lang_name_en": "English",
+
+  "reveal_invalid_param": "Noto‘g‘ri reveal parametri.",
+  "message_not_found": "Xabar topilmadi.",
+  "payment_not_allowed": "Siz bu xabar uchun to‘lov qila olmaysiz.",
+
+  "spam_blocked": "Xabaringiz spam deb topildi va yuborilmadi.",
+  "must_join_or_reply": "Xabar yuborish uchun avval havola orqali sessiyaga kiring. Owner bo‘lsangiz, xabar ostidagi “Javob berish” tugmasini bosing.",
+  "cannot_self_message": "Siz o‘zingizning havolangiz orqali o‘zingizga xabar yubora olmaysiz.",
+
+  "reply_sent": "Javobingiz yuborildi.",
+  "message_sent_to_owner": "Xabaringiz ownerga yuborildi.",
+
+  "reply_fallback_prefix": "Javob: {text}",
+
+  "invoice_title": "Kim yozganini ko‘rish",
+  "invoice_desc": "{stars}⭐ evaziga ushbu anonim xabar yozuvchisi ko‘rsatiladi.",
+  "invoice_price_label": "Kim yozganini ko‘rish",
+  "invoice_error": "To‘lov yaratib bo‘lmadi. Keyinroq urinib ko‘ring.",
+
+  "pay_support_default": "To‘lov bo‘yicha yordam: bot admini bilan bog‘laning (masalan, @your_admin).",
+
+  "cb_invalid_id": "Noto‘g‘ri ID.",
+  "cb_no_permission": "Ruxsat yo‘q.",
+  "cb_already_revealed": "Allaqachon ochilgan ✅",
+  "cb_payment_required": "{stars}⭐ to‘lov kerak",
+
+  "cb_reply_prompt": "Iltimos, javobingizni yuboring.",
+  "msg_reply_instruction": "Endi javobingizni yozing va yuboring. Bu xabar anonim foydalanuvchiga yuboriladi.",
+  "cb_reply_not_allowed": "Siz bu xabarga javob bera olmaysiz.",
+  "cb_ask_prompt": "Iltimos, yangi savolingizni yozing.",
+
+  "cb_session_closed": "Sessiya yopildi.",
+  "cb_session_not_found": "Sessiya topilmadi.",
+  "msg_session_closed_owner": "Sessiya muvaffaqiyatli yopildi.",
+  "msg_session_closed_anon": "Sizning sessiyangiz yopildi.",
+
+  "cb_repeat_prompt": "Iltimos, xabaringizni qayta yuboring.",
+  "msg_repeat_owner": "Xabarni qayta yuboring (xohlasangiz tahrirlab yuboring).",
+
+  "cb_error": "Xatolik yuz berdi.",
+
+  "reveal_opened_title": "🔓 Kim yozgani ochildi:",
+  "reveal_opened_id": "- ID: {id}",
+  "reveal_opened_name": "- Ism: {name}",
+  "reveal_opened_username": "- Username: {username}",
+
+  "userstats_title": "Siz haqingizdagi analitika:",
+  "userstats_sent": "- Yuborilgan xabarlar soni: {count}",
+  "userstats_sessions_anon": "- Sessiyalar (anon sifatida): {count}",
+  "userstats_sessions_owner": "- Sessiyalar (owner sifatida): {count}",
+  "userstats_last_activity": "- Oxirgi faoliyat vaqti: {value}",
+  "userstats_no_activity": "Hali xabar yuborilmagan",
+  "userstats_error": "Analitikani olishda xatolik yuz berdi.",
+
+  "btn_reply": "Javob berish",
+  "btn_reveal": "Kim yozganini ko‘rish ({stars}⭐)",
+  "btn_ask_again": "Yana savol berish",
+  "btn_close_session": "Sessiyani yopish",
+  "btn_repeat": "Takrorlash",
+
+  "kind_text": "matn",
+  "kind_photo": "rasm",
+  "kind_video": "video",
+  "kind_document": "hujjat",
+  "kind_sticker": "stiker",
+  "kind_animation": "animatsiya",
+  "kind_voice": "ovozli xabar",
+  "kind_audio": "audio",
+  "kind_video_note": "video xabar",
+  "kind_unknown": "qo‘llab-quvvatlanmaydi"
+}
+

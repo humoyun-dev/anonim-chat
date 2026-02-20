@@ -45,6 +45,9 @@ services:
       - BOT_USERNAME=${BOT_USERNAME}
       - REVEAL_STARS_COST=${REVEAL_STARS_COST:-50}
       - PAY_SUPPORT_TEXT=${PAY_SUPPORT_TEXT:-}
+      - PAY_SUPPORT_TEXT_EN=${PAY_SUPPORT_TEXT_EN:-}
+      - PAY_SUPPORT_TEXT_RU=${PAY_SUPPORT_TEXT_RU:-}
+      - PAY_SUPPORT_TEXT_UZ=${PAY_SUPPORT_TEXT_UZ:-}
     depends_on:
       - mongo
     networks:

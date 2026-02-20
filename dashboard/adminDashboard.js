@@ -417,17 +417,17 @@ app.get("/conversation", isAuthenticated, async (req, res) => {
     res.send("Error retrieving users for conversation.");
   }
 });
-app.post("/conversation", isAuthenticated, async (req, res) => {
-  const { sender, receiver } = req.body;
-  if (!sender || !receiver) {
-    const users = await User.find({}).sort({ userId: 1 });
-    return res.render("selectConversation", {
-      title: "Conversation",
-      active: "conversation",
-      users,
-      error: "Iltimos, ikkala foydalanuvchini ham tanlang!",
-    });
-  }
+	app.post("/conversation", isAuthenticated, async (req, res) => {
+	  const { sender, receiver } = req.body;
+	  if (!sender || !receiver) {
+	    const users = await User.find({}).sort({ userId: 1 });
+	    return res.render("selectConversation", {
+	      title: "Conversation",
+	      active: "conversation",
+	      users,
+	      error: "Please select both users.",
+	    });
+	  }
   const a = Math.min(parseInt(sender, 10), parseInt(receiver, 10));
   const b = Math.max(parseInt(sender, 10), parseInt(receiver, 10));
   res.redirect(`/chat/${a}/${b}`);
@@ -463,11 +463,11 @@ app.get("/user/:userId/detail", isAuthenticated, async (req, res) => {
       userId,
       partners,
     });
-  } catch (err) {
-    console.error("Error fetching user detail:", err);
-    res.send("Foydalanuvchi detailini olishda xatolik yuz berdi.");
-  }
-});
+	  } catch (err) {
+	    console.error("Error fetching user detail:", err);
+	    res.send("Failed to load user details.");
+	  }
+	});
 
 // ------------------- SERVER START ------------------- //
 const PORT = process.env.PORT || 3000;
