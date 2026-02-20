@@ -50,6 +50,7 @@
                 method="POST"
                 onsubmit="return confirm('Delete this message?');"
               >
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <button class="btn btn-sm btn-outline-danger" type="submit">
                   Delete
                 </button>

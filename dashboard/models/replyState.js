@@ -1,8 +1,4 @@
 const mongoose = require("mongoose");
+const { createReplyStateModel } = require("../../shared/models/replyState");
 
-const replySchema = new mongoose.Schema({
-  ownerId: { type: Number, required: true, unique: true },
-  anonUserId: { type: Number, required: true },
-});
-
-module.exports = mongoose.model("ReplyState", replySchema);
+module.exports = createReplyStateModel(mongoose);

@@ -12,17 +12,18 @@ services:
 
   dashboard:
     build:
-      context: ./dashboard
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: dashboard/Dockerfile
     container_name: anonim-dashboard
     ports:
       - "3000:3000"
     environment:
+      - NODE_ENV=${NODE_ENV:-production}
       - PORT=3000
       - MONGODB_URI=${MONGODB_URI_DASHBOARD:-mongodb://mongo:27017/anonim_chat?replicaSet=rs0}
-      - SESSION_SECRET=${SESSION_SECRET:-change-me}
-      - ADMIN_USER=${ADMIN_USER:-admin}
-      - ADMIN_PASS=${ADMIN_PASS:-password}
+      - SESSION_SECRET=${SESSION_SECRET}
+      - ADMIN_USER=${ADMIN_USER}
+      - ADMIN_PASS=${ADMIN_PASS}
       - VIRTUAL_HOST=${DASHBOARD_DOMAIN:-}
       - VIRTUAL_PORT=3000
       - LETSENCRYPT_HOST=${DASHBOARD_DOMAIN:-}
@@ -36,8 +37,8 @@ services:
 
   bot:
     build:
-      context: ./bot
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: bot/Dockerfile
     container_name: anonim-bot
     environment:
       - MONGODB_URI=${MONGODB_URI_BOT:-mongodb://mongo:27017/anonim_chat?replicaSet=rs0}

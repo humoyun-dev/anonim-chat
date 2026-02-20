@@ -12,6 +12,7 @@
   "cmd_desc_userstats": "Show your statistics",
   "cmd_desc_paysupport": "Payment support info",
   "cmd_desc_lang": "Change language",
+  "cmd_desc_cancel": "Cancel reply mode",
 
   "lang_choose": "Choose your language:",
   "lang_updated": "Language updated ✅",
@@ -57,6 +58,12 @@
   "cb_repeat_prompt": "Please resend your message.",
   "msg_repeat_owner": "Please resend the message (you can edit and send again).",
 
+  "cancel_reply_done": "Reply mode cancelled.",
+  "cancel_reply_none": "No active reply mode.",
+
+  "msg_ask_owner_notify": "The anonymous user wants to ask again. Waiting for their next message.",
+  "msg_repeat_owner_notify": "The anonymous user will resend the message.",
+
   "cb_error": "Something went wrong.",
 
   "reveal_opened_title": "🔓 Sender revealed:",
@@ -77,6 +84,7 @@
   "btn_ask_again": "Ask again",
   "btn_close_session": "Close session",
   "btn_repeat": "Repeat",
+  "btn_cancel_reply": "Cancel reply",
 
   "kind_text": "text",
   "kind_photo": "photo",
@@ -89,4 +97,3 @@
   "kind_video_note": "video note",
   "kind_unknown": "unsupported"
 }
-

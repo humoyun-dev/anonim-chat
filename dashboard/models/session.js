@@ -1,8 +1,4 @@
 const mongoose = require("mongoose");
+const { createSessionModel } = require("../../shared/models/session");
 
-const sessionSchema = new mongoose.Schema({
-  anonUserId: { type: Number, required: true, unique: true },
-  ownerId: { type: Number, required: true },
-});
-
-module.exports = mongoose.model("Session", sessionSchema);
+module.exports = createSessionModel(mongoose);

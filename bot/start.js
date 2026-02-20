@@ -4,6 +4,15 @@ const mongoose = require("mongoose");
 const { getMessageKind, getSpamText, isValidMongoId } = require("./lib/telegram");
 const { createSpamGuard } = require("./lib/spamGuard");
 const { normalizeLang, t, getPaySupportText } = require("./lib/i18n");
+const { parseCallbackData } = require("./lib/callbackData");
+const { getRoomKey } = require("./lib/room");
+const {
+  createUserModel,
+  createMessageModel,
+  createSessionModel,
+  createReplyStateModel,
+  createConversationSummaryModel,
+} = require("../shared/models");
 
 const mongoUri = process.env.MONGODB_URI;
 if (!mongoUri) {
@@ -11,50 +20,11 @@ if (!mongoUri) {
 }
 
 /* ------------------ MODELLAR ------------------ */
-// Foydalanuvchi ma'lumotlari: Telegram foydalanuvchi ID, ismi, familiyasi va username
-const userSchema = new mongoose.Schema({
-  userId: { type: Number, unique: true, required: true },
-  firstName: String,
-  lastName: String,
-  username: String,
-  lang: { type: String, enum: ["en", "ru", "uz"], default: "en" },
-  langSelected: { type: Boolean, default: false },
-  telegramLang: String,
-});
-const User = mongoose.model("User", userSchema);
-
-// Xabarlar: yuboruvchi, qabul qiluvchi, xabar matni va yuborilgan vaqt
-const messageSchema = new mongoose.Schema({
-  sender: { type: Number, required: true },
-  recipient: { type: Number, required: true },
-  kind: { type: String, default: "text" }, // text/photo/video/document/sticker/...
-  text: { type: String, default: "" }, // text yoki caption (bo'lmasa bo'sh)
-  tgChatId: Number,
-  tgMessageId: Number,
-  // Reveal feature uchun joy (Stars) — keyin to'ldiramiz
-  reveal: {
-    purchased: { type: Boolean, default: false },
-    purchasedAt: Date,
-    stars: Number,
-    telegramPaymentChargeId: String,
-  },
-  timestamp: { type: Date, default: Date.now },
-});
-const Message = mongoose.model("Message", messageSchema);
-
-// Sessiyalar: anonim foydalanuvchi va owner o'rtasidagi bog'lanish
-const sessionSchema = new mongoose.Schema({
-  anonUserId: { type: Number, required: true, unique: true },
-  ownerId: { type: Number, required: true },
-});
-const Session = mongoose.model("Session", sessionSchema);
-
-// Reply State: owner javob berayotgan anonim foydalanuvchi
-const replySchema = new mongoose.Schema({
-  ownerId: { type: Number, required: true, unique: true },
-  anonUserId: { type: Number, required: true },
-});
-const ReplyState = mongoose.model("ReplyState", replySchema);
+const User = createUserModel(mongoose);
+const Message = createMessageModel(mongoose);
+const ConversationSummary = createConversationSummaryModel(mongoose);
+const Session = createSessionModel(mongoose);
+const ReplyState = createReplyStateModel(mongoose);
 
 /* ------------------ BOT SOZLAMALARI ------------------ */
 const token = process.env.TELEGRAM_BOT_TOKEN;
@@ -347,6 +317,27 @@ bot.command("lang", async (ctx) => {
   });
 });
 
+async function handleCancelReply(ctx) {
+  const chatId = ctx.chat?.id;
+  const ownerId = ctx.from?.id;
+  if (!chatId || !ownerId) return;
+  const lang = ctx.state.lang || "en";
+  const result = await ReplyState.deleteOne({ ownerId }).catch((err) => {
+    console.error("ReplyState cancel error:", err);
+    return null;
+  });
+
+  const didCancel = Boolean(result && result.deletedCount > 0);
+  await bot.api.sendMessage(
+    chatId,
+    didCancel ? t(lang, "cancel_reply_done") : t(lang, "cancel_reply_none")
+  );
+}
+
+bot.command("cancel", handleCancelReply);
+bot.command("bekor", handleCancelReply);
+bot.command("otmena", handleCancelReply);
+
 bot.on("pre_checkout_query", async (ctx) => {
   try {
     await bot.api.answerPreCheckoutQuery(ctx.update.pre_checkout_query.id, true);
@@ -438,27 +429,49 @@ bot.on("message", async (ctx) => {
       if (typeof payload === "string" && payload.startsWith("reveal:")) {
         const messageId = payload.split(":")[1];
         if (isValidMongoId(messageId)) {
-          const messageDoc = await Message.findById(messageId).lean().exec();
-          if (!messageDoc) {
-            await bot.api.sendMessage(msg.chat.id, t(lang, "message_not_found"));
-            return;
-          }
-          if (messageDoc.recipient !== msg.from.id) {
-            await bot.api.sendMessage(msg.chat.id, t(lang, "payment_not_allowed"));
-            return;
-          }
+          const fromId = msg.from?.id;
+          if (!fromId) return;
 
-          await Message.findByIdAndUpdate(messageId, {
+          const update = {
             $set: {
               "reveal.purchased": true,
               "reveal.purchasedAt": new Date(),
               "reveal.stars": msg.successful_payment.total_amount,
               "reveal.telegramPaymentChargeId":
                 msg.successful_payment.telegram_payment_charge_id,
+              "reveal.providerPaymentChargeId":
+                msg.successful_payment.provider_payment_charge_id,
             },
-          }).catch((err) => console.error("Reveal update error:", err));
+          };
 
-          await revealSenderToOwner(msg.chat.id, messageDoc, lang);
+          const updated = await Message.findOneAndUpdate(
+            { _id: messageId, recipient: fromId, "reveal.purchased": { $ne: true } },
+            update,
+            { new: true }
+          )
+            .lean()
+            .exec()
+            .catch((err) => {
+              console.error("Reveal update error:", err);
+              return null;
+            });
+
+          if (updated) {
+            await revealSenderToOwner(msg.chat.id, updated, lang);
+            return;
+          }
+
+          const existing = await Message.findById(messageId).lean().exec();
+          if (!existing) {
+            await bot.api.sendMessage(msg.chat.id, t(lang, "message_not_found"));
+            return;
+          }
+          if (existing.recipient !== fromId) {
+            await bot.api.sendMessage(msg.chat.id, t(lang, "payment_not_allowed"));
+            return;
+          }
+
+          await revealSenderToOwner(msg.chat.id, existing, lang);
           return;
         }
       }
@@ -510,9 +523,11 @@ bot.on("message", async (ctx) => {
 
     const kind = getMessageKind(msg);
     const timestamp = msg.date ? new Date(msg.date * 1000) : new Date();
+    const roomKey = getRoomKey(fromId, recipient);
     const messageRecord = new Message({
       sender: fromId,
       recipient,
+      roomKey,
       text: msg.text || msg.caption || "",
       kind,
       timestamp,
@@ -520,9 +535,41 @@ bot.on("message", async (ctx) => {
       tgMessageId: msg.message_id,
     });
 
-    await messageRecord.save().catch((err) =>
-      console.error("Xabarni saqlashda xatolik:", err)
-    );
+    let didSave = true;
+    try {
+      await messageRecord.save();
+    } catch (err) {
+      didSave = false;
+      console.error("Message save error:", err);
+    }
+
+    if (didSave) {
+      const preview = (messageRecord.text || "").trim().slice(0, 180);
+      const lastMessageText = preview || `[${kind}]`;
+      await ConversationSummary.findOneAndUpdate(
+        {
+          roomKey,
+          $or: [
+            { lastMessageId: { $exists: false } },
+            { lastMessageId: { $lt: messageRecord._id } },
+          ],
+        },
+        {
+          $set: {
+            roomKey,
+            userA: Math.min(fromId, recipient),
+            userB: Math.max(fromId, recipient),
+            lastMessageId: messageRecord._id,
+            lastMessageAt: timestamp,
+            lastMessageText,
+            lastKind: kind,
+            lastSender: fromId,
+            updatedAt: new Date(),
+          },
+        },
+        { upsert: true }
+      ).catch((err) => console.error("ConversationSummary upsert error:", err));
+    }
 
     // Xabarni yo'naltirish:
     if (replyEntry) {
@@ -572,19 +619,18 @@ bot.on("message", async (ctx) => {
     // Anon -> Owner
     const ownerId = session?.ownerId || recipient;
     const ownerLang = await getUserLang(ownerId, { fallback: "en" });
-    const options = {
-      reply_markup: {
-        inline_keyboard: [
-          [{ text: t(ownerLang, "btn_reply"), callback_data: `reply:${fromId}` }],
-          [
-            {
-              text: t(ownerLang, "btn_reveal", { stars: REVEAL_STARS_COST }),
-              callback_data: `reveal:${messageRecord._id}`,
-            },
-          ],
-        ],
-      },
-    };
+    const inlineKeyboard = [
+      [{ text: t(ownerLang, "btn_reply"), callback_data: `reply:${fromId}` }],
+    ];
+    if (didSave) {
+      inlineKeyboard.push([
+        {
+          text: t(ownerLang, "btn_reveal", { stars: REVEAL_STARS_COST }),
+          callback_data: `reveal:${messageRecord._id}`,
+        },
+      ]);
+    }
+    const options = { reply_markup: { inline_keyboard: inlineKeyboard } };
 
     try {
       await sendCopySafe(ownerId, chatId, msg, options, ownerLang);
@@ -610,71 +656,75 @@ bot.on("message", async (ctx) => {
 /* ------------------ CALLBACK QUERY HANDLER ------------------ */
 bot.on("callback_query:data", async (ctx) => {
   const data = ctx.callbackQuery.data;
-  const ownerId = ctx.from.id;
+  const actorId = ctx.from.id;
   const callbackQueryId = ctx.callbackQuery.id;
   const lang = ctx.state.lang || "en";
 
-  if (data.startsWith("lang:")) {
-    const selectedRaw = data.split(":")[1];
-    const selected = ["en", "ru", "uz"].includes(selectedRaw) ? selectedRaw : null;
+  const parsed = parseCallbackData(data);
+  if (!parsed) {
+    await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_error") });
+    return;
+  }
+
+  if (parsed.type === "lang") {
+    const selected = ["en", "ru", "uz"].includes(parsed.lang) ? parsed.lang : null;
     if (!selected) {
-      await bot.api.answerCallbackQuery(callbackQueryId, {
-        text: t(lang, "cb_error"),
-      });
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_error") });
       return;
     }
 
     await User.updateOne(
-      { userId: ownerId },
+      { userId: actorId },
       { $set: { lang: selected, langSelected: true } },
       { upsert: true }
     ).catch((err) => console.error("Language update error:", err));
-    cacheSetUserLang(ownerId, selected);
+    cacheSetUserLang(actorId, selected);
 
-    await bot.api.answerCallbackQuery(callbackQueryId, {
-      text: t(selected, "lang_updated"),
-    });
+    await bot.api.answerCallbackQuery(callbackQueryId, { text: t(selected, "lang_updated") });
 
     try {
       await ctx.editMessageText(t(selected, "lang_choose"), {
         reply_markup: buildLangKeyboard(selected, selected),
       });
     } catch (err) {
-      // Not fatal (message might be too old / not editable)
       console.warn("editMessageText (lang) failed:", err?.message || err);
     }
     return;
   }
 
-  if (data.startsWith("reveal:")) {
-    const messageId = data.split(":")[1];
+  if (parsed.type === "cancel_reply") {
+    const result = await ReplyState.deleteOne({ ownerId: actorId }).catch((err) => {
+      console.error("ReplyState cancel callback error:", err);
+      return null;
+    });
+    const didCancel = Boolean(result && result.deletedCount > 0);
+    await bot.api.answerCallbackQuery(callbackQueryId, {
+      text: didCancel ? t(lang, "cancel_reply_done") : t(lang, "cancel_reply_none"),
+    });
+    return;
+  }
+
+  if (parsed.type === "reveal") {
+    const messageId = parsed.messageId;
     if (!isValidMongoId(messageId)) {
-      await bot.api.answerCallbackQuery(callbackQueryId, {
-        text: t(lang, "cb_invalid_id"),
-      });
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_invalid_id") });
       return;
     }
 
     const messageDoc = await Message.findById(messageId).lean().exec();
     if (!messageDoc) {
-      await bot.api.answerCallbackQuery(callbackQueryId, {
-        text: t(lang, "message_not_found"),
-      });
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "message_not_found") });
       return;
     }
 
-    if (messageDoc.recipient !== ownerId) {
-      await bot.api.answerCallbackQuery(callbackQueryId, {
-        text: t(lang, "cb_no_permission"),
-      });
+    if (messageDoc.recipient !== actorId) {
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_no_permission") });
       return;
     }
 
     if (messageDoc.reveal?.purchased) {
-      await bot.api.answerCallbackQuery(callbackQueryId, {
-        text: t(lang, "cb_already_revealed"),
-      });
-      await revealSenderToOwner(ownerId, messageDoc, lang);
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_already_revealed") });
+      await revealSenderToOwner(actorId, messageDoc, lang);
       return;
     }
 
@@ -682,89 +732,92 @@ bot.on("callback_query:data", async (ctx) => {
       text: t(lang, "cb_payment_required", { stars: REVEAL_STARS_COST }),
     });
     try {
-      await sendRevealInvoice(ownerId, messageId, lang);
+      await sendRevealInvoice(actorId, messageId, lang);
     } catch (err) {
       console.error("sendInvoice error:", err);
-      await bot.api.sendMessage(ownerId, t(lang, "invoice_error"));
+      await bot.api.sendMessage(actorId, t(lang, "invoice_error"));
     }
     return;
   }
 
-  if (data.startsWith("reply:")) {
-    const anonUserId = parseInt(data.split(":")[1], 10);
-    const session = await Session.findOne({ anonUserId });
-    if (session && session.ownerId === ownerId) {
-      await ReplyState.findOneAndUpdate(
-        { ownerId: ownerId },
-        { anonUserId },
-        { upsert: true, new: true }
-      );
-      await bot.api.answerCallbackQuery(callbackQueryId, {
-        text: t(lang, "cb_reply_prompt"),
-      });
-      await bot.api.sendMessage(ownerId, t(lang, "msg_reply_instruction"));
+  if (parsed.type === "reply") {
+    const anonUserId = parsed.anonUserId;
+    const session = await Session.findOne({ anonUserId }).lean().exec();
+    if (!session || session.ownerId !== actorId) {
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_reply_not_allowed") });
       console.log(
-        `Owner ${ownerId} javob berish holatiga o'tdi (anon ${anonUserId}).`
+        `Reply denied: user ${actorId} cannot reply to anon ${anonUserId}.`
       );
-    } else {
-      await bot.api.answerCallbackQuery(callbackQueryId, {
-        text: t(lang, "cb_reply_not_allowed"),
-      });
-      console.log(
-        `Javob berish rad etildi: Foydalanuvchi ${ownerId} anonim ${anonUserId} ga javob bera olmadi.`
-      );
+      return;
     }
-  } else if (data.startsWith("ask:")) {
-    const anonUserId = parseInt(data.split(":")[1], 10);
-    await bot.api.answerCallbackQuery(callbackQueryId, {
-      text: t(lang, "cb_ask_prompt"),
-    });
-    console.log(
-      `Anonim ${anonUserId} uchun yangi savol yozilishi so'ralmoqda.`
+
+    await ReplyState.findOneAndUpdate(
+      { ownerId: actorId },
+      { $set: { anonUserId, createdAt: new Date() } },
+      { upsert: true, new: true }
     );
-  } else if (data.startsWith("close:")) {
-    const anonUserId = parseInt(data.split(":")[1], 10);
+    await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_reply_prompt") });
+    await bot.api.sendMessage(actorId, t(lang, "msg_reply_instruction"), {
+      reply_markup: {
+        inline_keyboard: [
+          [{ text: t(lang, "btn_cancel_reply"), callback_data: "cancel_reply" }],
+        ],
+      },
+    });
+    console.log(`Reply mode enabled: owner ${actorId} -> anon ${anonUserId}.`);
+    return;
+  }
+
+  if (parsed.type === "ask" || parsed.type === "close" || parsed.type === "repeat") {
+    const anonUserId = parsed.anonUserId;
+    if (anonUserId !== actorId) {
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_no_permission") });
+      return;
+    }
+
+    const session = await Session.findOne({ anonUserId }).lean().exec();
+    if (!session) {
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_session_not_found") });
+      return;
+    }
+
+    if (parsed.type === "ask") {
+      const ownerLang = await getUserLang(session.ownerId, { fallback: "en" });
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_ask_prompt") });
+      await bot.api.sendMessage(anonUserId, t(lang, "cb_ask_prompt"));
+      await bot.api.sendMessage(session.ownerId, t(ownerLang, "msg_ask_owner_notify"));
+      console.log(`Ask again: anon ${anonUserId} -> owner ${session.ownerId}.`);
+      return;
+    }
+
+    if (parsed.type === "repeat") {
+      const ownerLang = await getUserLang(session.ownerId, { fallback: "en" });
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_repeat_prompt") });
+      await bot.api.sendMessage(anonUserId, t(lang, "msg_repeat_owner"));
+      await bot.api.sendMessage(session.ownerId, t(ownerLang, "msg_repeat_owner_notify"));
+      console.log(`Repeat: anon ${anonUserId} -> owner ${session.ownerId}.`);
+      return;
+    }
+
+    // close
     try {
-      const session = await Session.findOne({ anonUserId }).lean().exec();
-      if (!session) {
-        await bot.api.answerCallbackQuery(callbackQueryId, {
-          text: t(lang, "cb_session_not_found"),
-        });
-        return;
-      }
-
       await Session.deleteOne({ anonUserId });
-      await bot.api.answerCallbackQuery(callbackQueryId, {
-        text: t(lang, "cb_session_closed"),
-      });
+      await ReplyState.deleteMany({
+        $or: [{ ownerId: session.ownerId }, { anonUserId }],
+      }).catch((err) => console.error("ReplyState cleanup error:", err));
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_session_closed") });
 
-      const sessionOwnerId = session.ownerId;
-      const ownerLang = await getUserLang(sessionOwnerId, { fallback: "en" });
+      const ownerLang = await getUserLang(session.ownerId, { fallback: "en" });
       const anonLang = await getUserLang(anonUserId, { fallback: "en" });
 
-      await bot.api.sendMessage(
-        sessionOwnerId,
-        t(ownerLang, "msg_session_closed_owner")
-      );
+      await bot.api.sendMessage(session.ownerId, t(ownerLang, "msg_session_closed_owner"));
       await bot.api.sendMessage(anonUserId, t(anonLang, "msg_session_closed_anon"));
-
-      console.log(
-        `Sessiya yopildi: Anon ${anonUserId} va Owner ${sessionOwnerId}.`
-      );
+      console.log(`Session closed: anon ${anonUserId} and owner ${session.ownerId}.`);
     } catch (err) {
-      console.error("Sessiyani yopishda xatolik:", err);
-      await bot.api.answerCallbackQuery(callbackQueryId, {
-        text: t(lang, "cb_error"),
-      });
+      console.error("Close session error:", err);
+      await bot.api.answerCallbackQuery(callbackQueryId, { text: t(lang, "cb_error") });
     }
-  } else if (data.startsWith("repeat:")) {
-    const anonUserId = parseInt(data.split(":")[1], 10);
-    await bot.api.answerCallbackQuery(callbackQueryId, {
-      text: t(lang, "cb_repeat_prompt"),
-    });
-    console.log(
-      `Takrorlash: Owner ${ownerId} uchun anonim ${anonUserId} xabari qayta yuborilishi talab qilindi.`
-    );
+    return;
   }
 });
 
@@ -816,10 +869,26 @@ async function start() {
   await mongoose.connect(mongoUri);
   console.log("Connected to MongoDB");
 
+  await Promise.all([
+    Message.createIndexes().catch((err) =>
+      console.error("Message index creation error:", err)
+    ),
+    ConversationSummary.createIndexes().catch((err) =>
+      console.error("ConversationSummary index creation error:", err)
+    ),
+    Session.createIndexes().catch((err) =>
+      console.error("Session index creation error:", err)
+    ),
+    ReplyState.createIndexes().catch((err) =>
+      console.error("ReplyState index creation error:", err)
+    ),
+  ]);
+
   const commandsFor = (lang) => [
     { command: "start", description: t(lang, "cmd_desc_start") },
     { command: "getlink", description: t(lang, "cmd_desc_getlink") },
     { command: "lang", description: t(lang, "cmd_desc_lang") },
+    { command: "cancel", description: t(lang, "cmd_desc_cancel") },
     { command: "userstats", description: t(lang, "cmd_desc_userstats") },
     { command: "paysupport", description: t(lang, "cmd_desc_paysupport") },
   ];

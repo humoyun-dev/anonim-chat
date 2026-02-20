@@ -50,6 +50,7 @@
                 style="display: inline-block"
                 onsubmit="return confirm('Are you sure?');"
               >
+                <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
                 <button class="btn btn-sm btn-outline-danger" type="submit">
                   Delete
                 </button>
