@@ -6,9 +6,37 @@ services:
     volumes:
       - mongo_data:/data/db
       - ./docker/mongo/init-replica.js:/docker-entrypoint-initdb.d/init-replica.js:ro
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "mongosh --quiet --host localhost:27017 --eval 'try { const s = rs.status(); if (s.ok !== 1) quit(1); } catch (e) { quit(1); }'",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 30
     networks:
       - appnet
     restart: unless-stopped
+
+  # Ensures the single-node replica set is initiated even when the mongo_data
+  # volume already exists (docker-entrypoint-initdb.d runs only on first init).
+  mongo-init:
+    image: mongo:7
+    container_name: mongo-init
+    depends_on:
+      - mongo
+    volumes:
+      - ./docker/mongo/init-replica.js:/scripts/init-replica.js:ro
+    command:
+      [
+        "sh",
+        "-c",
+        "until mongosh --quiet --host mongo:27017 --eval 'db.adminCommand({ ping: 1 })' >/dev/null 2>&1; do echo 'Waiting for MongoDB...'; sleep 1; done; mongosh --quiet --host mongo:27017 /scripts/init-replica.js; echo 'Replica set init done.'",
+      ]
+    networks:
+      - appnet
+    restart: on-failure
 
   dashboard:
     build:
@@ -24,12 +52,16 @@ services:
       - SESSION_SECRET=${SESSION_SECRET}
       - ADMIN_USER=${ADMIN_USER}
       - ADMIN_PASS=${ADMIN_PASS}
+      - COOKIE_SECURE=${COOKIE_SECURE:-0}
+      - TRUST_PROXY=${TRUST_PROXY:-1}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - VIRTUAL_HOST=${DASHBOARD_DOMAIN:-}
       - VIRTUAL_PORT=3000
       - LETSENCRYPT_HOST=${DASHBOARD_DOMAIN:-}
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-}
     depends_on:
       - mongo
+      - mongo-init
     networks:
       - appnet
       - webnet
@@ -51,6 +83,7 @@ services:
       - PAY_SUPPORT_TEXT_UZ=${PAY_SUPPORT_TEXT_UZ:-}
     depends_on:
       - mongo
+      - mongo-init
     networks:
       - appnet
     restart: unless-stopped

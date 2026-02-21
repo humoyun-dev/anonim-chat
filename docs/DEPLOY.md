@@ -15,6 +15,9 @@ cd anonim-chat
 cp .env.example .env
 ```
 
+> Important: run Docker Compose from this folder (where `docker-compose.yml` and `.env` are).
+> If you run Compose from another directory, use `--env-file` explicitly.
+
 `.env` ichida:
 - `TELEGRAM_BOT_TOKEN`, `BOT_USERNAME`
 - `DASHBOARD_DOMAIN` (masalan: `dashboard.example.com`)
@@ -24,7 +27,7 @@ cp .env.example .env
 ## 3) Up
 
 ```bash
-docker compose up -d --build
+docker compose --env-file .env up -d --build
 ```
 
 ## 4) Tekshirish
@@ -33,6 +36,7 @@ docker compose up -d --build
 docker compose ps
 docker compose logs -f dashboard
 docker compose logs -f bot
+docker compose logs -f mongo-init
 docker compose logs -f letsencrypt
 ```
 
@@ -41,3 +45,5 @@ docker compose logs -f letsencrypt
 - `bot/.env` dagi `PAY_SUPPORT_TEXT` ni to‘ldiring (`/paysupport` uchun).
 - MongoDB ma’lumotlari `mongo_data` volume’da saqlanadi.
 
+> Note: `mongo-init` servis replica set’ni avtomatik ishga tushiradi (Change Streams / realtime uchun).
+> Agar dashboard oldin polling fallback’ga tushib qolgan bo‘lsa, `docker compose restart dashboard` qiling.

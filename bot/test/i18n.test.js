@@ -15,9 +15,9 @@ test("normalizeLang supports uz/ru/en and falls back to en", () => {
 });
 
 test("t returns localized button labels", () => {
-  assert.equal(t("en", "btn_reply"), "Reply");
-  assert.equal(t("ru", "btn_reply"), "Ответить");
-  assert.equal(t("uz", "btn_reply"), "Javob berish");
+  assert.equal(t("en", "btn_reply"), "✏️ Reply");
+  assert.equal(t("ru", "btn_reply"), "✏️ Ответить");
+  assert.equal(t("uz", "btn_reply"), "✏️ Javob berish");
 });
 
 test("t returns localized kind labels", () => {
@@ -37,10 +37,12 @@ test("getPaySupportText prefers per-language env override", () => {
     delete process.env.PAY_SUPPORT_TEXT;
     assert.equal(getPaySupportText("uz"), "Uz support text");
   } finally {
-    if (prev.PAY_SUPPORT_TEXT_UZ === undefined) delete process.env.PAY_SUPPORT_TEXT_UZ;
+    if (prev.PAY_SUPPORT_TEXT_UZ === undefined)
+      delete process.env.PAY_SUPPORT_TEXT_UZ;
     else process.env.PAY_SUPPORT_TEXT_UZ = prev.PAY_SUPPORT_TEXT_UZ;
 
-    if (prev.PAY_SUPPORT_TEXT === undefined) delete process.env.PAY_SUPPORT_TEXT;
+    if (prev.PAY_SUPPORT_TEXT === undefined)
+      delete process.env.PAY_SUPPORT_TEXT;
     else process.env.PAY_SUPPORT_TEXT = prev.PAY_SUPPORT_TEXT;
   }
 });
@@ -59,11 +61,12 @@ test("getPaySupportText falls back to generic env var, then default", () => {
     delete process.env.PAY_SUPPORT_TEXT;
     assert.equal(getPaySupportText("en"), t("en", "pay_support_default"));
   } finally {
-    if (prev.PAY_SUPPORT_TEXT_EN === undefined) delete process.env.PAY_SUPPORT_TEXT_EN;
+    if (prev.PAY_SUPPORT_TEXT_EN === undefined)
+      delete process.env.PAY_SUPPORT_TEXT_EN;
     else process.env.PAY_SUPPORT_TEXT_EN = prev.PAY_SUPPORT_TEXT_EN;
 
-    if (prev.PAY_SUPPORT_TEXT === undefined) delete process.env.PAY_SUPPORT_TEXT;
+    if (prev.PAY_SUPPORT_TEXT === undefined)
+      delete process.env.PAY_SUPPORT_TEXT;
     else process.env.PAY_SUPPORT_TEXT = prev.PAY_SUPPORT_TEXT;
   }
 });
-

@@ -19,6 +19,13 @@ function loadDashboardConfig(env = process.env) {
     adminUser: env.ADMIN_USER,
     adminPass: env.ADMIN_PASS,
     trustProxy: env.TRUST_PROXY === "1",
+    botToken: env.TELEGRAM_BOT_TOKEN || null,
+    cookieSecure:
+      env.COOKIE_SECURE === "1"
+        ? true
+        : env.COOKIE_SECURE === "0"
+          ? false
+          : undefined,
   };
 
   if (isProduction) {
@@ -32,11 +39,13 @@ function loadDashboardConfig(env = process.env) {
       if (!env[key] || !String(env[key]).trim()) missing.push(key);
     }
     if (missing.length) {
-      throw new Error(`Missing required env in production: ${missing.join(", ")}`);
+      throw new Error(
+        `Missing required env in production: ${missing.join(", ")}`,
+      );
     }
     if (!isStrongPassword(env.ADMIN_PASS)) {
       throw new Error(
-        "ADMIN_PASS is too weak. Requirements: >=12 chars, 1 upper, 1 lower, 1 digit."
+        "ADMIN_PASS is too weak. Requirements: >=12 chars, 1 upper, 1 lower, 1 digit.",
       );
     }
   }
@@ -48,4 +57,3 @@ module.exports = {
   isStrongPassword,
   loadDashboardConfig,
 };
-

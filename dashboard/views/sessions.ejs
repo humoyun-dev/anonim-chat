@@ -2,7 +2,7 @@
 
 <div class="container-fluid">
   <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="h4 m-0">Sessions</h1>
+    <h1 class="h4 m-0">Sessions <span class="badge bg-secondary ms-2"><%= sessions.length %></span></h1>
     <a class="btn btn-sm btn-outline-light" href="/chat">Open Chat</a>
   </div>
 
@@ -11,15 +11,48 @@
       <table class="table table-dark table-hover align-middle mb-0">
         <thead>
           <tr>
-            <th>Anon User ID</th>
-            <th>Owner ID</th>
+            <th>Anonymous User</th>
+            <th>Owner</th>
+            <th style="width: 200px;">Actions</th>
           </tr>
         </thead>
         <tbody>
+          <% if (sessions.length === 0) { %>
+          <tr><td colspan="3" class="text-center text-muted py-4">No active sessions.</td></tr>
+          <% } %>
           <% sessions.forEach((session) => { %>
+          <% const anonUser = usersById[session.anonUserId]; %>
+          <% const ownerUser = usersById[session.ownerId]; %>
           <tr>
-            <td><%= session.anonUserId %></td>
-            <td><%= session.ownerId %></td>
+            <td>
+              <code><%= session.anonUserId %></code>
+              <% if (anonUser) { %>
+              <span class="text-muted ms-1"><%= (anonUser.firstName || '') + ' ' + (anonUser.lastName || '') %></span>
+              <% if (anonUser.username) { %><span class="text-muted">(@<%= anonUser.username %>)</span><% } %>
+              <% } %>
+            </td>
+            <td>
+              <code><%= session.ownerId %></code>
+              <% if (ownerUser) { %>
+              <span class="text-muted ms-1"><%= (ownerUser.firstName || '') + ' ' + (ownerUser.lastName || '') %></span>
+              <% if (ownerUser.username) { %><span class="text-muted">(@<%= ownerUser.username %>)</span><% } %>
+              <% } %>
+            </td>
+            <td>
+              <div class="d-flex gap-1">
+                <a href="/chat/<%= Math.min(session.anonUserId, session.ownerId) %>/<%= Math.max(session.anonUserId, session.ownerId) %>"
+                   class="btn btn-sm btn-outline-light" title="View chat">💬 Chat</a>
+                <form
+                  action="/session/<%= session.anonUserId %>/delete"
+                  method="POST"
+                  onsubmit="return confirm('Close this session?');"
+                  style="display:inline"
+                >
+                  <input type="hidden" name="_csrf" value="<%= csrfToken %>" />
+                  <button class="btn btn-sm btn-outline-danger" type="submit">Close</button>
+                </form>
+              </div>
+            </td>
           </tr>
           <% }); %>
         </tbody>

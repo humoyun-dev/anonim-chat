@@ -1,11 +1,11 @@
 {
-  "cmd_getlink": "Sizning anonim chat havolangiz:\\n{link}\\nUshbu havola orqali boshqalar sizga anonim xabar yuborishi mumkin.",
-  "start_no_param": "Xush kelibsiz! Havola orqali kirgan bo‘lsangiz, shunchaki xabaringizni yuboring.",
-  "start_owner_self": "Siz ushbu anonim chat havolasining egasisiz.",
-  "start_joined": "Siz anonim chat sessiyasiga qo‘shildingiz. Xabaringizni yuboring.",
-  "start_owner_notified": "Sessiyangizga yangi anonim foydalanuvchi qo‘shildi.",
-  "start_session_save_error": "Sessiyani yaratib bo‘lmadi. Keyinroq urinib ko‘ring.",
-  "start_wrong_param": "Noto‘g‘ri parametr. Iltimos, havola orqali kiring.",
+  "cmd_getlink": "Sizning anonim havolangiz:\n{link}\n\nBu havolani do'stlaringizga yuboring — ular sizga anonim savol yubora oladi.",
+  "start_no_param": "Xush kelibsiz! Agar havola orqali kirgan bo'lsangiz, savolingizni yozib yuboring.",
+  "start_owner_self": "Bu sizning shaxsiy havolangiz. Uni do'stlaringizga yuboring — ular sizga anonim savol yubora oladi.",
+  "start_joined": "Savolingizni yozib yuboring. Xabaringiz anonim tarzda yetkaziladi.",
+  "start_owner_notified": "Sizga kimdir anonim savol bermoqchi. Xabarini kuting.",
+  "start_session_save_error": "Xatolik yuz berdi. Iltimos, keyinroq urinib ko'ring.",
+  "start_wrong_param": "Havola noto'g'ri. Iltimos, to'g'ri havola orqali kiring.",
 
   "cmd_desc_start": "Botni ishga tushirish",
   "cmd_desc_getlink": "Anonim havolani olish",
@@ -24,12 +24,12 @@
   "message_not_found": "Xabar topilmadi.",
   "payment_not_allowed": "Siz bu xabar uchun to‘lov qila olmaysiz.",
 
-  "spam_blocked": "Xabaringiz spam deb topildi va yuborilmadi.",
-  "must_join_or_reply": "Xabar yuborish uchun avval havola orqali sessiyaga kiring. Owner bo‘lsangiz, xabar ostidagi “Javob berish” tugmasini bosing.",
-  "cannot_self_message": "Siz o‘zingizning havolangiz orqali o‘zingizga xabar yubora olmaysiz.",
+  "spam_blocked": "Xabaringiz spam sifatida aniqlandi va yuborilmadi.",
+  "must_join_or_reply": "Xabar yuborish uchun avval havola orqali kiring. Agar bu sizga kelgan xabar bo'lsa, «Javob berish» tugmasini bosing.",
+  "cannot_self_message": "O'z havolangiz orqali o'zingizga savol yubora olmaysiz.",
 
-  "reply_sent": "Javobingiz yuborildi.",
-  "message_sent_to_owner": "Xabaringiz ownerga yuborildi.",
+  "reply_sent": "Javobingiz yuborildi ✅",
+  "message_sent_to_owner": "Savolingiz muvaffaqiyatli yuborildi ✅",
 
   "reply_fallback_prefix": "Javob: {text}",
 
@@ -45,23 +45,23 @@
   "cb_already_revealed": "Allaqachon ochilgan ✅",
   "cb_payment_required": "{stars}⭐ to‘lov kerak",
 
-  "cb_reply_prompt": "Iltimos, javobingizni yuboring.",
-  "msg_reply_instruction": "Endi javobingizni yozing va yuboring. Bu xabar anonim foydalanuvchiga yuboriladi.",
+  "cb_reply_prompt": "Javobingizni yozib yuboring.",
+  "msg_reply_instruction": "Javobingizni yozib yuboring. U anonim foydalanuvchiga yetkaziladi.",
   "cb_reply_not_allowed": "Siz bu xabarga javob bera olmaysiz.",
-  "cb_ask_prompt": "Iltimos, yangi savolingizni yozing.",
+  "cb_ask_prompt": "Yangi savolingizni yozib yuboring.",
 
-  "cb_session_closed": "Sessiya yopildi.",
-  "cb_session_not_found": "Sessiya topilmadi.",
-  "msg_session_closed_owner": "Sessiya muvaffaqiyatli yopildi.",
-  "msg_session_closed_anon": "Sizning sessiyangiz yopildi.",
+  "cb_session_closed": "Suhbat yakunlandi.",
+  "cb_session_not_found": "Suhbat topilmadi.",
+  "msg_session_closed_owner": "Anonim suhbat yakunlandi.",
+  "msg_session_closed_anon": "Suhbat yakunlandi. Yangi savol berish uchun havolani qayta oching.",
 
-  "cb_repeat_prompt": "Iltimos, xabaringizni qayta yuboring.",
-  "msg_repeat_owner": "Xabarni qayta yuboring (xohlasangiz tahrirlab yuboring).",
+  "cb_repeat_prompt": "Xabaringizni qayta yuboring.",
+  "msg_repeat_owner": "Xabarni qayta yuboring.",
 
   "cancel_reply_done": "Javob berish rejimi bekor qilindi.",
   "cancel_reply_none": "Faol reply rejimi yo‘q.",
 
-  "msg_ask_owner_notify": "Anonim foydalanuvchi yana savol bermoqchi. Keyingi xabar kutilmoqda.",
+  "msg_ask_owner_notify": "Anonim foydalanuvchi yana savol bermoqchi.",
   "msg_repeat_owner_notify": "Anonim foydalanuvchi xabarni qayta yuboradi.",
 
   "cb_error": "Xatolik yuz berdi.",
@@ -79,12 +79,12 @@
   "userstats_no_activity": "Hali xabar yuborilmagan",
   "userstats_error": "Analitikani olishda xatolik yuz berdi.",
 
-  "btn_reply": "Javob berish",
-  "btn_reveal": "Kim yozganini ko‘rish ({stars}⭐)",
-  "btn_ask_again": "Yana savol berish",
-  "btn_close_session": "Sessiyani yopish",
+  "btn_reply": "✏️ Javob berish",
+  "btn_reveal": "🔓 Kim yozganini ko'rish ({stars}⭐)",
+  "btn_ask_again": "📝 Yana savol berish",
+  "btn_close_session": "Suhbatni yakunlash",
   "btn_repeat": "Takrorlash",
-  "btn_cancel_reply": "Javobni bekor qilish",
+  "btn_cancel_reply": "❌ Bekor qilish",
 
   "kind_text": "matn",
   "kind_photo": "rasm",
@@ -95,5 +95,17 @@
   "kind_voice": "ovozli xabar",
   "kind_audio": "audio",
   "kind_video_note": "video xabar",
-  "kind_unknown": "qo‘llab-quvvatlanmaydi"
+  "kind_unknown": "qo'llab-quvvatlanmaydi",
+
+  "welcome_main": "👋 Xush kelibsiz!\n\nBu bot orqali siz anonim savollar qabul qilishingiz mumkin.\n\n🔗 Havola oling va do'stlaringizga yuboring — ular sizga anonim savol yubora oladi.\n\nQuyidagi tugmalardan birini tanlang:",
+  "start_active_session": "Sizda faol suhbat bor. Savolingizni yuboring yoki quyidagi menyudan foydalaning.",
+  "btn_menu_getlink": "🔗 Havolani olish",
+  "btn_menu_lang": "🌍 Til",
+  "btn_menu_stats": "📊 Statistika",
+  "btn_menu_paysupport": "💳 To'lov yordam",
+  "btn_menu_help": "❓ Qanday ishlaydi?",
+  "btn_back_menu": "⬅️ Asosiy menyu",
+  "help_text": "📖 Qanday ishlaydi:\n\n1️⃣ «🔗 Havolani olish» tugmasini bosing\n2️⃣ Havolani do'stlaringizga yuboring\n3️⃣ Kimdir havola orqali savol yuborganida, uni shu yerda ko'rasiz\n4️⃣ «Javob berish» tugmasini bosib javob yozing\n5️⃣ «Kim yozganini ko'rish» tugmasi orqali yozuvchini bilib olishingiz mumkin (pullik)\n\n💡 Maslahatlar:\n• /cancel — javob rejimidan chiqish\n• /lang — tilni o'zgartirish",
+  "cmd_desc_help": "Botdan foydalanish yo'riqnomasi",
+  "cmd_desc_menu": "Asosiy menyuni ko'rsatish"
 }

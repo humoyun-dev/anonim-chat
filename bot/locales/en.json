@@ -1,11 +1,11 @@
 {
-  "cmd_getlink": "Your anonymous chat link:\\n{link}\\nShare this link so others can message you anonymously.",
-  "start_no_param": "Welcome! If you opened the bot via an invite link, just send your message.",
-  "start_owner_self": "You're the owner of this anonymous chat link.",
-  "start_joined": "You're connected to an anonymous chat session. Send your message.",
-  "start_owner_notified": "A new anonymous user joined your session.",
-  "start_session_save_error": "Couldn't create the session. Please try again later.",
-  "start_wrong_param": "Invalid start parameter. Please use the invite link.",
+  "cmd_getlink": "Your anonymous link:\n{link}\n\nShare this link with friends — they can send you anonymous questions.",
+  "start_no_param": "Welcome! If you came here via a link, just type your question and send it.",
+  "start_owner_self": "This is your own link. Share it with friends — they can send you anonymous questions.",
+  "start_joined": "Type your question and send it. Your message will be delivered anonymously.",
+  "start_owner_notified": "Someone wants to ask you an anonymous question. Please wait for their message.",
+  "start_session_save_error": "Something went wrong. Please try again later.",
+  "start_wrong_param": "This link is invalid. Please use the correct invitation link.",
 
   "cmd_desc_start": "Start the bot",
   "cmd_desc_getlink": "Get your anonymous chat link",
@@ -25,11 +25,11 @@
   "payment_not_allowed": "You can't pay for this message.",
 
   "spam_blocked": "Your message was detected as spam and was not sent.",
-  "must_join_or_reply": "To send messages, open the session via the link. If you are the owner, tap \"Reply\" under the message.",
-  "cannot_self_message": "You can't message yourself via your own link.",
+  "must_join_or_reply": "To send a message, please open the link first. If this is a message sent to you, tap \"Reply\" below it.",
+  "cannot_self_message": "You can't send questions to yourself via your own link.",
 
-  "reply_sent": "Your reply was sent.",
-  "message_sent_to_owner": "Your message was sent to the owner.",
+  "reply_sent": "Your reply has been sent ✅",
+  "message_sent_to_owner": "Your question has been sent ✅",
 
   "reply_fallback_prefix": "Reply: {text}",
 
@@ -45,23 +45,23 @@
   "cb_already_revealed": "Already revealed ✅",
   "cb_payment_required": "Payment required: {stars}⭐",
 
-  "cb_reply_prompt": "Please send your reply.",
-  "msg_reply_instruction": "Now type your reply and send it. It will be delivered to the anonymous user.",
+  "cb_reply_prompt": "Type your reply and send it.",
+  "msg_reply_instruction": "Type your reply and send it. It will be delivered to the anonymous user.",
   "cb_reply_not_allowed": "You can't reply to this message.",
-  "cb_ask_prompt": "Please type your new question.",
+  "cb_ask_prompt": "Type your new question and send it.",
 
-  "cb_session_closed": "Session closed.",
-  "cb_session_not_found": "Session not found.",
-  "msg_session_closed_owner": "Session has been closed.",
-  "msg_session_closed_anon": "Your session has been closed.",
+  "cb_session_closed": "Conversation ended.",
+  "cb_session_not_found": "Conversation not found.",
+  "msg_session_closed_owner": "The anonymous conversation has ended.",
+  "msg_session_closed_anon": "The conversation has ended. To ask a new question, open the link again.",
 
   "cb_repeat_prompt": "Please resend your message.",
-  "msg_repeat_owner": "Please resend the message (you can edit and send again).",
+  "msg_repeat_owner": "Please resend the message.",
 
   "cancel_reply_done": "Reply mode cancelled.",
   "cancel_reply_none": "No active reply mode.",
 
-  "msg_ask_owner_notify": "The anonymous user wants to ask again. Waiting for their next message.",
+  "msg_ask_owner_notify": "The anonymous user wants to ask another question.",
   "msg_repeat_owner_notify": "The anonymous user will resend the message.",
 
   "cb_error": "Something went wrong.",
@@ -79,12 +79,12 @@
   "userstats_no_activity": "No messages yet",
   "userstats_error": "Failed to load your stats.",
 
-  "btn_reply": "Reply",
-  "btn_reveal": "Show sender ({stars}⭐)",
-  "btn_ask_again": "Ask again",
-  "btn_close_session": "Close session",
+  "btn_reply": "✏️ Reply",
+  "btn_reveal": "🔓 Show sender ({stars}⭐)",
+  "btn_ask_again": "📝 Ask another question",
+  "btn_close_session": "End conversation",
   "btn_repeat": "Repeat",
-  "btn_cancel_reply": "Cancel reply",
+  "btn_cancel_reply": "❌ Cancel reply",
 
   "kind_text": "text",
   "kind_photo": "photo",
@@ -95,5 +95,17 @@
   "kind_voice": "voice message",
   "kind_audio": "audio",
   "kind_video_note": "video note",
-  "kind_unknown": "unsupported"
+  "kind_unknown": "unsupported",
+
+  "welcome_main": "👋 Welcome!\n\nWith this bot, you can receive anonymous questions.\n\n🔗 Get your link and share it with friends — they can send you anonymous questions.\n\nChoose an action below:",
+  "start_active_session": "You have an active conversation. Send your question, or use the menu below.",
+  "btn_menu_getlink": "🔗 Get my link",
+  "btn_menu_lang": "🌍 Language",
+  "btn_menu_stats": "📊 My stats",
+  "btn_menu_paysupport": "💳 Payment support",
+  "btn_menu_help": "❓ How to use",
+  "btn_back_menu": "⬅️ Main menu",
+  "help_text": "📖 How it works:\n\n1️⃣ Tap «🔗 Get my link» to get your anonymous link\n2️⃣ Share it with friends\n3️⃣ When someone sends a question, you'll see it here\n4️⃣ Tap «Reply» to respond\n5️⃣ Tap «Show sender» to reveal who sent it (paid)\n\n💡 Tips:\n• /cancel — exit reply mode\n• /lang — change language",
+  "cmd_desc_help": "How to use the bot",
+  "cmd_desc_menu": "Show main menu"
 }

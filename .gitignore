@@ -5,4 +5,8 @@ html/
 data/
 docker/mongo/*.log
 node_modules/
-
+/logs/
+/tmp/
+.DS_Store
+/dist/
+/*.log

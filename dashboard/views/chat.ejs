@@ -1,109 +1,142 @@
 <%- include("partials/layout-top", { title, active }) %>
 
-<div class="chat-shell">
-  <aside class="chat-list">
-    <div class="chat-list-header">
+<div class="tg-shell">
+  <!-- Conversation List (left panel) -->
+  <aside class="tg-sidebar">
+    <div class="tg-sidebar-header">
       <input
         id="chatSearch"
-        class="form-control form-control-sm"
+        class="tg-search"
         type="text"
-        placeholder="Search..."
+        placeholder="🔍 Search"
       />
     </div>
-    <div id="conversationList" class="chat-list-items">
+    <div id="conversationList" class="tg-conv-list">
       <% if (!conversations || conversations.length === 0) { %>
-      <div class="chat-list-empty">No conversations yet.</div>
+      <div class="tg-conv-empty">No conversations yet.</div>
       <% } %> <% conversations.forEach((c) => { %>
+      <%
+        const initA = (c.userAName || '?')[0].toUpperCase();
+        const initB = (c.userBName || '?')[0].toUpperCase();
+        const isActive = selected && selected.userA === c.userAId && selected.userB === c.userBId;
+        const timeStr = c.lastTimestamp ? new Date(c.lastTimestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+      %>
       <a
-        class="chat-list-item <%= selected && selected.userA === c.userAId && selected.userB === c.userBId ? 'active' : '' %>"
+        class="tg-conv-item <%= isActive ? 'active' : '' %>"
         href="/chat/<%= c.userAId %>/<%= c.userBId %>"
         data-user-a="<%= c.userAId %>"
         data-user-b="<%= c.userBId %>"
       >
-        <div class="chat-list-title">
-          <%= c.userAName %> <span class="chat-list-arrow">↔</span> <%= c.userBName %>
-        </div>
-        <div class="chat-list-meta">
-          <span class="chat-list-preview"><%= c.lastPreview %></span>
-          <span class="chat-list-time"
-            ><%= c.lastTimestamp ? new Date(c.lastTimestamp).toLocaleString() : '' %></span
-          >
+        <div class="tg-avatar"><%= initA %><%= initB %></div>
+        <div class="tg-conv-body">
+          <div class="tg-conv-top">
+            <span class="tg-conv-name"><%= c.userAName %> ↔ <%= c.userBName %></span>
+            <span class="tg-conv-time"><%= timeStr %></span>
+          </div>
+          <div class="tg-conv-preview"><%= c.lastPreview %></div>
         </div>
       </a>
       <% }) %>
     </div>
   </aside>
 
-  <section class="chat-main">
+  <!-- Chat Area (right panel) -->
+  <section class="tg-chat">
     <% if (!selected) { %>
-    <div class="chat-empty">
-      <h5 class="mb-1">Select a conversation</h5>
-      <div class="text-muted">Choose a conversation from the left.</div>
+    <div class="tg-chat-placeholder">
+      <div class="tg-placeholder-icon">💬</div>
+      <div class="tg-placeholder-text">Select a chat to start viewing</div>
     </div>
     <% } else { %>
-    <div class="chat-header">
-      <div class="chat-header-title">
-        <span class="chat-header-id"><%= selected.userA %></span>
-        <span class="chat-header-arrow">↔</span>
-        <span class="chat-header-id"><%= selected.userB %></span>
+    <%
+      const uA = usersById[selected.userA];
+      const uB = usersById[selected.userB];
+      const nameA = uA ? ((uA.firstName || '') + ' ' + (uA.lastName || '')).trim() || ('@' + uA.username) || String(uA.userId) : String(selected.userA);
+      const nameB = uB ? ((uB.firstName || '') + ' ' + (uB.lastName || '')).trim() || ('@' + uB.username) || String(uB.userId) : String(selected.userB);
+    %>
+    <div class="tg-chat-header">
+      <div class="tg-chat-header-avatar"><%= (nameA[0] || '?').toUpperCase() %><%= (nameB[0] || '?').toUpperCase() %></div>
+      <div class="tg-chat-header-info">
+        <div class="tg-chat-header-name"><%= nameA %> ↔ <%= nameB %></div>
+        <div class="tg-chat-header-status"><%= messages.length %> messages</div>
       </div>
     </div>
-    <div id="chatMessages" class="chat-messages">
-      <% messages.forEach((m) => { %> <% const isLeft = m.sender ===
-      selected.userA; %>
+
+    <div id="chatMessages" class="tg-messages">
+      <% let lastDate = ''; %>
+      <% messages.forEach((m) => { %>
+      <%
+        const isLeft = m.sender === selected.userA;
+        const msgDate = m.timestamp ? new Date(m.timestamp).toLocaleDateString() : '';
+        const msgTime = m.timestamp ? new Date(m.timestamp).toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}) : '';
+        const senderUser = usersById[m.sender];
+        const senderName = senderUser ? ((senderUser.firstName || '') + ' ' + (senderUser.lastName || '')).trim() || ('@' + (senderUser.username || '')) : String(m.sender);
+      %>
+      <% if (msgDate && msgDate !== lastDate) { lastDate = msgDate; %>
+      <div class="tg-date-sep"><span><%= msgDate %></span></div>
+      <% } %>
       <div
-        class="msg-row <%= isLeft ? 'left' : 'right' %>"
+        class="tg-msg <%= isLeft ? 'tg-msg-left' : 'tg-msg-right' %>"
         data-message-id="<%= m._id %>"
       >
-        <div class="msg-bubble">
-          <div class="msg-text">
-            <%= (m.text && m.text.trim()) ? m.text : ("[" + (m.kind || "media") + "]") %>
+        <%
+          const imgKinds   = ['photo','document'];
+          const videoKinds = ['sticker','animation','video','video_note'];
+          const audioKinds = ['voice','audio'];
+          const isImg   = m.mediaFileId && imgKinds.includes(m.kind);
+          const isVideo = m.mediaFileId && videoKinds.includes(m.kind);
+          const isAudio = m.mediaFileId && audioKinds.includes(m.kind);
+          const hasCaption = m.text && m.text.trim();
+          const isMediaOnly = (isImg || isVideo || isAudio) && !hasCaption;
+          const thumbId = m.mediaThumbFileId || m.mediaFileId;
+          const isVideoNote = m.kind === 'video_note';
+        %>
+        <div class="tg-bubble<%= isMediaOnly ? ' tg-media-bubble' : '' %>">
+          <div class="tg-bubble-name"><%= senderName %></div>
+          <% if (isImg) { %>
+            <a href="/tg-media/<%= m.mediaFileId %>" target="_blank" rel="noopener" class="tg-media-link">
+              <img src="/tg-media/<%= thumbId %>" alt="<%= m.kind %>" loading="lazy" class="tg-media-img" />
+            </a>
+            <% if (hasCaption) { %><div class="tg-caption"><%= m.text.trim().substring(0, 200) %></div><% } %>
+          <% } else if (isVideo) { %>
+            <a href="/tg-media/<%= m.mediaFileId %>" target="_blank" rel="noopener" class="tg-media-link">
+              <video
+                src="/tg-media/<%= m.mediaFileId %>"
+                autoplay loop muted playsinline
+                class="<%= isVideoNote ? 'tg-video-note' : 'tg-media-img' %>"
+                title="<%= m.kind %>"
+              ></video>
+            </a>
+            <% if (hasCaption) { %><div class="tg-caption"><%= m.text.trim().substring(0, 200) %></div><% } %>
+          <% } else if (isAudio) { %>
+            <div class="tg-audio-wrap">
+              <audio controls src="/tg-media/<%= m.mediaFileId %>" class="tg-audio-player"></audio>
+            </div>
+          <% } else { %>
+            <div class="tg-bubble-text"><%= (m.text && m.text.trim()) ? m.text : ("[" + (m.kind || "media") + "]") %></div>
+          <% } %>
+          <span class="tg-bubble-time"><%= msgTime %></span>
+          <%
+            const senderR = m.senderReaction || null;
+            const recipientR = m.recipientReaction || null;
+            const hasReactions = senderR || recipientR;
+          %>
+          <% if (hasReactions) { %>
+          <div class="tg-reactions">
+            <% if (senderR) { %><span class="tg-reaction-pill" title="Sender"><%= senderR %></span><% } %>
+            <% if (recipientR) { %><span class="tg-reaction-pill" title="Recipient"><%= recipientR %></span><% } %>
           </div>
-          <div class="msg-meta">
-            <span class="msg-sender"><%= m.sender %></span>
-            <span class="msg-time"
-              ><%= m.timestamp ? new Date(m.timestamp).toLocaleString() : '' %></span
-            >
-          </div>
+          <% } %>
         </div>
       </div>
       <% }) %>
     </div>
-    <div class="chat-footer">
-      <div class="text-muted small">Real-time: Socket.io</div>
+
+    <div class="tg-chat-footer">
+      <div class="tg-footer-text">🔴 Live · Socket.io</div>
     </div>
     <% } %>
   </section>
-
-  <aside class="chat-info">
-    <% if (!selected) { %>
-    <div class="chat-info-empty text-muted">Info</div>
-    <% } else { %>
-    <div class="chat-info-card">
-      <div class="chat-info-title">Conversation info</div>
-      <div class="chat-info-row">
-        <div class="chat-info-label">User A</div>
-        <div class="chat-info-value">
-          <%= usersById[selected.userA] ? (usersById[selected.userA].firstName || '') : '' %>
-          <%= usersById[selected.userA] ? (usersById[selected.userA].lastName || '') : '' %>
-          <% if (usersById[selected.userA] && usersById[selected.userA].username) { %>
-          (@<%= usersById[selected.userA].username %>)
-          <% } %> [ID: <%= selected.userA %>]
-        </div>
-      </div>
-      <div class="chat-info-row">
-        <div class="chat-info-label">User B</div>
-        <div class="chat-info-value">
-          <%= usersById[selected.userB] ? (usersById[selected.userB].firstName || '') : '' %>
-          <%= usersById[selected.userB] ? (usersById[selected.userB].lastName || '') : '' %>
-          <% if (usersById[selected.userB] && usersById[selected.userB].username) { %>
-          (@<%= usersById[selected.userB].username %>)
-          <% } %> [ID: <%= selected.userB %>]
-        </div>
-      </div>
-    </div>
-    <% } %>
-  </aside>
 </div>
 
 <script>

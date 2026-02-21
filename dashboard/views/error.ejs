@@ -1,0 +1,12 @@
+<%- include("partials/layout-top", { title, active }) %>
+
+<div class="container-fluid d-flex justify-content-center align-items-center" style="min-height: 60vh;">
+  <div class="text-center">
+    <div style="font-size: 3rem; margin-bottom: 12px;">⚠️</div>
+    <h2 class="h4 mb-3"><%= message || "Something went wrong" %></h2>
+    <a href="/chat" class="btn btn-primary">Go to Chat</a>
+    <a href="/dashboard" class="btn btn-outline-light ms-2">Dashboard</a>
+  </div>
+</div>
+
+<%- include("partials/layout-bottom") %>

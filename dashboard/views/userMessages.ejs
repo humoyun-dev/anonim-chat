@@ -1,70 +1,33 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>User <%= userId %> Conversation</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <style>
-    .chat-container {
-      max-width: 800px;
-      margin: auto;
-      border: 1px solid #dee2e6;
-      padding: 15px;
-      border-radius: 5px;
-      background-color: #f8f9fa;
-    }
-    .chat-bubble {
-      max-width: 70%;
-      padding: 10px 15px;
-      border-radius: 15px;
-      margin-bottom: 10px;
-      position: relative;
-    }
-    .chat-time {
-      font-size: 0.8rem;
-      margin-top: 5px;
-      color: #6c757d;
-    }
-  </style>
-</head>
-<body>
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark mb-4">
-    <div class="container-fluid">
-      <a class="navbar-brand" href="/dashboard">Dashboard</a>
-      <div class="d-flex">
-        <a class="btn btn-outline-light me-2" href="/users">Users</a>
-        <a class="btn btn-outline-light" href="/logout">Logout</a>
-      </div>
-    </div>
-  </nav>
-  <div class="container chat-container">
-    <h2 class="mb-4 text-center">User <%= userId %> Conversation</h2>
-    <div class="chat">
-      <% messages.forEach(message => { %>
-        <% if (message.sender === userId) { %>
-          <!-- Outgoing message (sent by the user) -->
-          <div class="d-flex justify-content-end">
-            <div class="chat-bubble bg-primary text-white">
-              <div><%= message.text %></div>
-              <div class="chat-time text-end"><%= new Date(message.timestamp).toLocaleString() %></div>
-            </div>
-          </div>
-        <% } else { %>
-          <!-- Incoming message (received by the user) -->
-          <div class="d-flex justify-content-start">
-            <div class="chat-bubble bg-light border">
-              <div><%= message.text %></div>
-              <div class="chat-time text-start"><%= new Date(message.timestamp).toLocaleString() %></div>
-            </div>
-          </div>
-        <% } %>
-      <% }); %>
-    </div>
-    <div class="text-center mt-4">
-      <a href="/users" class="btn btn-secondary">Back to Users List</a>
+<%- include("partials/layout-top", { title: "User " + userId + " Conversation", active: "users" }) %>
+
+<div class="container-fluid">
+  <div class="d-flex align-items-center justify-content-between mb-3">
+    <h1 class="h4 m-0">User <%= userId %> Conversation</h1>
+    <div class="d-flex gap-2">
+      <a class="btn btn-sm btn-outline-light" href="/user/<%= userId %>/detail">Back</a>
+      <a class="btn btn-sm btn-outline-light" href="/users">All Users</a>
     </div>
   </div>
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+
+  <div class="card border-0" style="background: rgba(15,23,42,0.35); border: 1px solid rgba(255,255,255,0.08) !important;">
+    <div style="padding: 14px; display: flex; flex-direction: column; gap: 10px; max-height: 70vh; overflow: auto;">
+      <% if (messages.length === 0) { %>
+      <div class="text-center text-muted py-4">No messages in this conversation.</div>
+      <% } %>
+      <% messages.forEach(message => { %>
+        <% const isLeft = message.sender === userId; %>
+        <div class="msg-row <%= isLeft ? 'left' : 'right' %>">
+          <div class="msg-bubble">
+            <div class="msg-text"><%= (message.text && message.text.trim()) ? message.text : ("[" + (message.kind || "media") + "]") %></div>
+            <div class="msg-meta">
+              <span class="msg-sender"><%= message.sender %></span>
+              <span class="msg-time"><%= message.timestamp ? new Date(message.timestamp).toLocaleString() : '' %></span>
+            </div>
+          </div>
+        </div>
+      <% }); %>
+    </div>
+  </div>
+</div>
+
+<%- include("partials/layout-bottom") %>

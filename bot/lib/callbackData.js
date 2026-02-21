@@ -15,14 +15,20 @@ function parseCallbackData(data) {
     if (!Number.isFinite(anonUserId)) return null;
     return { type: "reply", anonUserId };
   }
-  if (type === "ask" || type === "close" || type === "repeat") {
+  if (type === "ask") {
+    const ownerId = Number.parseInt(arg, 10);
+    if (!Number.isFinite(ownerId)) return null;
+    return { type: "ask", ownerId };
+  }
+  if (type === "close" || type === "repeat") {
     const anonUserId = Number.parseInt(arg, 10);
     if (!Number.isFinite(anonUserId)) return null;
     return { type, anonUserId };
   }
 
+  if (type === "menu") return { type: "menu", action: arg };
+
   return null;
 }
 
 module.exports = { parseCallbackData };
-

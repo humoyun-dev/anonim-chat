@@ -20,7 +20,7 @@ function loadApp() {
   return require("../adminDashboard").app;
 }
 
-test("POST /login without CSRF token returns 403", async () => {
+test("POST /login without CSRF token redirects to login", async () => {
   const app = loadApp();
   const agent = request.agent(app);
 
@@ -30,7 +30,8 @@ test("POST /login without CSRF token returns 403", async () => {
     .post("/login")
     .type("form")
     .send({ username: "admin", password: "StrongPass12345" })
-    .expect(403);
+    .expect(302)
+    .expect("location", "/login");
 });
 
 test("POST /login with CSRF token succeeds", async () => {

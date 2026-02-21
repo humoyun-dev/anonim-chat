@@ -1,37 +1,293 @@
 <%- include("partials/layout-top", { title, active }) %>
 
-<div class="container-fluid">
-  <div class="d-flex align-items-center justify-content-between mb-3">
-    <h1 class="h4 m-0">Dashboard Analytics</h1>
-    <a class="btn btn-sm btn-outline-light" href="/chat">Open Chat</a>
+<div class="container-fluid pb-4">
+
+  <!-- Page header -->
+  <div class="d-flex align-items-center justify-content-between mb-4">
+    <div>
+      <h1 class="h4 m-0 fw-bold">Analytics</h1>
+      <p class="text-muted small m-0 mt-1">Real-time marketing &amp; engagement overview</p>
+    </div>
+    <a class="btn btn-sm btn-outline-light" href="/chat">💬 Open Chat</a>
   </div>
 
+  <!-- ── Row 1: Audience ───────────────────────────────────── -->
+  <p class="kpi-section-label">Audience</p>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-blue">👥</span>
+          <span class="kpi-badge">Total</span>
+        </div>
+        <div class="kpi-value"><%= userCount.toLocaleString() %></div>
+        <div class="kpi-label">Total Users</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-green">⚡</span>
+          <span class="kpi-badge kpi-badge-green">Today</span>
+        </div>
+        <div class="kpi-value"><%= dau.toLocaleString() %></div>
+        <div class="kpi-label">DAU — Daily Active</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-yellow">📊</span>
+          <span class="kpi-badge kpi-badge-yellow">7 days</span>
+        </div>
+        <div class="kpi-value"><%= wau.toLocaleString() %></div>
+        <div class="kpi-label">WAU — Weekly Active</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-purple">🌐</span>
+          <span class="kpi-badge kpi-badge-purple">30 days</span>
+        </div>
+        <div class="kpi-value"><%= mau.toLocaleString() %></div>
+        <div class="kpi-label">MAU — Monthly Active</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Row 2: Acquisition ────────────────────────────────── -->
+  <p class="kpi-section-label">Acquisition</p>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-teal">🆕</span>
+          <span class="kpi-badge">Today</span>
+        </div>
+        <div class="kpi-value"><%= newUsersToday.toLocaleString() %></div>
+        <div class="kpi-label">New Users Today</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-blue">📅</span>
+          <span class="kpi-badge kpi-badge-blue">7 days</span>
+        </div>
+        <div class="kpi-value"><%= newUsersWeek.toLocaleString() %></div>
+        <div class="kpi-label">New Users This Week</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-green">📆</span>
+          <span class="kpi-badge kpi-badge-green">30 days</span>
+        </div>
+        <div class="kpi-value"><%= newUsersMonth.toLocaleString() %></div>
+        <div class="kpi-label">New Users This Month</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card kpi-card-highlight">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-pink">🔄</span>
+          <span class="kpi-badge kpi-badge-pink">WoW</span>
+        </div>
+        <div class="kpi-value"><%= retentionRate %>%</div>
+        <div class="kpi-label">Retention Rate (WoW)</div>
+        <div class="kpi-bar-bg"><div class="kpi-bar-fill" style="width:<%= retentionRate %>%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Row 3: Engagement ──────────────────────────────────── -->
+  <p class="kpi-section-label">Engagement</p>
+  <div class="row g-3 mb-4">
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-green">💬</span>
+          <span class="kpi-badge">All time</span>
+        </div>
+        <div class="kpi-value"><%= messageCount.toLocaleString() %></div>
+        <div class="kpi-label">Total Messages</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-yellow">🗂️</span>
+          <span class="kpi-badge">All time</span>
+        </div>
+        <div class="kpi-value"><%= totalConversations.toLocaleString() %></div>
+        <div class="kpi-label">Total Conversations</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-teal">✉️</span>
+          <span class="kpi-badge">Avg</span>
+        </div>
+        <div class="kpi-value"><%= avgMsgPerConv %></div>
+        <div class="kpi-label">Msgs / Conversation</div>
+      </div>
+    </div>
+    <div class="col-md-3 col-sm-6">
+      <div class="kpi-card">
+        <div class="kpi-top">
+          <span class="kpi-icon kpi-purple">👤</span>
+          <span class="kpi-badge kpi-badge-yellow">7 days</span>
+        </div>
+        <div class="kpi-value"><%= avgMsgPerUser %></div>
+        <div class="kpi-label">Msgs / Active User (WAU)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Chart: Message Trend ──────────────────────────────── -->
+  <div class="analytics-card mb-4">
+    <div class="analytics-card-header">
+      <div class="d-flex align-items-center gap-3 flex-wrap">
+        <span class="analytics-card-title">📈 Message Trend</span>
+        <div class="metric-tabs" id="metricTabs">
+          <button class="metric-tab active" data-metric="count">Messages</button>
+          <button class="metric-tab" data-metric="activeUsers">Active Users</button>
+          <button class="metric-tab" data-metric="newUsers">New Users</button>
+        </div>
+      </div>
+      <div class="period-tabs" id="periodTabs">
+        <button class="period-tab active" data-period="daily">Daily</button>
+        <button class="period-tab" data-period="weekly">Weekly</button>
+        <button class="period-tab" data-period="monthly">Monthly</button>
+        <button class="period-tab" data-period="yearly">Yearly</button>
+      </div>
+    </div>
+    <div class="analytics-card-body pt-3">
+      <div id="mainChart" class="chart-bar-container" style="height:200px"></div>
+      <div class="chart-legend mt-2" id="chartLegend"></div>
+    </div>
+  </div>
+
+  <!-- ── Chart: Peak Activity Hours ───────────────────────── -->
+  <div class="analytics-card mb-4">
+    <div class="analytics-card-header">
+      <span class="analytics-card-title">🕐 Peak Activity Hours <small class="text-muted fw-normal">(last 7 days, UTC)</small></span>
+    </div>
+    <div class="analytics-card-body pt-3">
+      <div class="chart-bar-container peak-chart">
+        <% const phMax = Math.max(...peakHours.map(h => h.count), 1); %>
+        <% peakHours.forEach(h => { %>
+        <div class="chart-bar-col">
+          <% if (h.count > 0) { %><div class="chart-bar-value" style="font-size:0.65rem"><%= h.count %></div><% } else { %><div class="chart-bar-value" style="visibility:hidden">0</div><% } %>
+          <div class="chart-bar-track">
+            <div class="chart-bar-fill chart-bar-fill-teal" style="height:<%= Math.max((h.count / phMax) * 100, h.count > 0 ? 4 : 0) %>%"></div>
+          </div>
+          <div class="chart-bar-label" style="font-size:0.6rem"><%= h.label %></div>
+        </div>
+        <% }) %>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Quick links ────────────────────────────────────────── -->
   <div class="row g-3">
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm" style="background: rgba(96,165,250,0.12); color: white;">
-        <div class="card-body">
-          <div class="text-white-50">Total Users</div>
-          <div class="display-6 fw-bold"><%= userCount %></div>
-        </div>
-      </div>
+    <div class="col-md-3 col-6">
+      <a href="/users" class="quick-link-card">
+        <div class="quick-link-icon">👥</div>
+        <div>Manage Users</div>
+      </a>
     </div>
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm" style="background: rgba(34,197,94,0.12); color: white;">
-        <div class="card-body">
-          <div class="text-white-50">Total Messages</div>
-          <div class="display-6 fw-bold"><%= messageCount %></div>
-        </div>
-      </div>
+    <div class="col-md-3 col-6">
+      <a href="/messages" class="quick-link-card">
+        <div class="quick-link-icon">💬</div>
+        <div>All Messages</div>
+      </a>
     </div>
-    <div class="col-md-4">
-      <div class="card border-0 shadow-sm" style="background: rgba(251,191,36,0.14); color: white;">
-        <div class="card-body">
-          <div class="text-white-50">Total Sessions</div>
-          <div class="display-6 fw-bold"><%= sessionCount %></div>
-        </div>
-      </div>
+    <div class="col-md-3 col-6">
+      <a href="/sessions" class="quick-link-card">
+        <div class="quick-link-icon">🔗</div>
+        <div>Sessions</div>
+      </a>
+    </div>
+    <div class="col-md-3 col-6">
+      <a href="/export/messages" class="quick-link-card">
+        <div class="quick-link-icon">📥</div>
+        <div>Export CSV</div>
+      </a>
     </div>
   </div>
 </div>
+
+<script>
+(() => {
+  // ── Chart data from server ──────────────────────────────────
+  const chartData = {
+    daily:   <%- JSON.stringify(dailyStats) %>,
+    weekly:  <%- JSON.stringify(weeklyStats) %>,
+    monthly: <%- JSON.stringify(monthlyStats) %>,
+    yearly:  <%- JSON.stringify(yearlyStats) %>,
+  };
+
+  const fillClass = {
+    count:       'chart-bar-fill',
+    activeUsers: 'chart-bar-fill-blue',
+    newUsers:    'chart-bar-fill-purple',
+  };
+  const metricLabel = {
+    count:       'Messages',
+    activeUsers: 'Active Users',
+    newUsers:    'New Users',
+  };
+
+  let currentPeriod = 'daily';
+  let currentMetric = 'count';
+
+  function drawChart() {
+    const data   = chartData[currentPeriod];
+    const metric = currentMetric;
+    const max    = Math.max(...data.map(d => d[metric] || 0), 1);
+    const container = document.getElementById('mainChart');
+
+    container.innerHTML = data.map(item => {
+      const val = item[metric] || 0;
+      const pct = Math.max((val / max) * 100, val > 0 ? 3 : 0);
+      return `<div class="chart-bar-col">
+        <div class="chart-bar-value">${val > 999 ? (val/1000).toFixed(1)+'k' : val}</div>
+        <div class="chart-bar-track">
+          <div class="${fillClass[metric]}" style="width:100%;height:${pct}%;border-radius:6px 6px 0 0;transition:height 350ms ease;"></div>
+        </div>
+        <div class="chart-bar-label">${item.label}</div>
+      </div>`;
+    }).join('');
+
+    document.getElementById('chartLegend').innerHTML =
+      `<span class="legend-dot ${fillClass[metric]}"></span> ${metricLabel[metric]}` +
+      `<span class="ms-3 text-muted small">Max: ${max.toLocaleString()} &nbsp;|&nbsp; Total: ${data.reduce((a,b) => a + (b[metric]||0), 0).toLocaleString()}</span>`;
+  }
+
+  // Period tabs
+  document.querySelectorAll('.period-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentPeriod = tab.dataset.period;
+      document.querySelectorAll('.period-tab').forEach(t => t.classList.toggle('active', t === tab));
+      drawChart();
+    });
+  });
+
+  // Metric tabs
+  document.querySelectorAll('.metric-tab').forEach(tab => {
+    tab.addEventListener('click', () => {
+      currentMetric = tab.dataset.metric;
+      document.querySelectorAll('.metric-tab').forEach(t => t.classList.toggle('active', t === tab));
+      drawChart();
+    });
+  });
+
+  drawChart();
+})();
+</script>
 
 <%- include("partials/layout-bottom") %>
